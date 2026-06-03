@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Choose to Go to the Moon — An Illustrated Reading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Spectral:wght@300;400&family=Oswald:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#05070f; --deep:#0a0e1c; --ink:#0c1226;
+  --cream:#f3ecd9; --cream-dim:#cfc7b3;
+  --gold:#e8b85f; --gold-soft:#c89a4a; --steel:#7d93b8;
+  --glow:rgba(232,184,95,0.35);
+  --page:#100a06;            /* deep aged-paper-in-space */
+  --page-edge:#1d1812;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(30,42,74,0.55), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 90%, rgba(232,184,95,0.06), transparent 60%),
+    var(--void);
+  color:var(--cream); font-family:'Spectral',serif;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; overflow:hidden;
+}
+/* starfield */
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.star{position:absolute;background:#fff;border-radius:50%;animation:tw var(--dur,4s) ease-in-out infinite;opacity:.5;}
+@keyframes tw{0%,100%{opacity:.12;}50%{opacity:.8;}}
+/* grain */
+body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+/* ===== BOOK ===== */
+#book{
+  position:relative; z-index:2;
+  width:min(94vw, 1080px);
+  height:min(86vh, 680px);
+  perspective:2600px;
+  display:flex;
+}
+.leaf{
+  position:relative; width:50%; height:100%;
+  background:linear-gradient(110deg, var(--page), var(--page-edge));
+  overflow:hidden;
+}
+.leaf.left{
+  border-radius:6px 0 0 6px;
+  box-shadow:inset -28px 0 50px -28px rgba(0,0,0,0.85), 0 30px 70px -20px rgba(0,0,0,0.7);
+  border:1px solid rgba(232,184,95,0.10); border-right:none;
+}
+.leaf.right{
+  border-radius:0 6px 6px 0;
+  box-shadow:inset 28px 0 50px -28px rgba(0,0,0,0.85), 0 30px 70px -20px rgba(0,0,0,0.7);
+  border:1px solid rgba(232,184,95,0.10); border-left:none;
+}
+/* the center gutter shadow */
+#book::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:36px;transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,0.55),transparent);z-index:30;pointer-events:none;}
+
+/* page content */
+.pg{position:absolute;inset:0;padding:46px 52px;display:flex;flex-direction:column;
+  justify-content:center;backface-visibility:hidden;}
+.leaf.left .pg{padding-right:60px;}
+.leaf.right .pg{padding-left:60px;}
+
+/* flipping leaf overlay */
+.flip{
+  position:absolute; top:0; right:0; width:50%; height:100%;
+  transform-origin:left center; transform-style:preserve-3d;
+  z-index:40; pointer-events:none;
+}
+.flip .face{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;
+  background:linear-gradient(110deg,var(--page),var(--page-edge));}
+.flip .front{border-radius:0 6px 6px 0;box-shadow:inset 28px 0 50px -28px rgba(0,0,0,0.85);}
+.flip .back{border-radius:6px 0 0 6px;transform:rotateY(180deg);
+  box-shadow:inset -28px 0 50px -28px rgba(0,0,0,0.85);}
+.flip .shade{position:absolute;inset:0;background:rgba(0,0,0,0);transition:none;}
+
+/* ---- typography per page type ---- */
+.folio{position:absolute;top:30px;left:52px;font-family:'Oswald',sans-serif;
+  font-size:.62rem;letter-spacing:.3em;color:var(--gold-soft);opacity:.7;}
+.leaf.right .folio{left:auto;right:52px;}
+
+blockquote{font-family:'Cormorant Garamond',serif;font-weight:500;font-style:italic;
+  font-size:clamp(1.4rem,2.4vw,2.15rem);line-height:1.32;color:var(--cream);}
+blockquote .accent{color:var(--gold);}
+.vrule{width:46px;height:1px;background:var(--gold-soft);opacity:.6;margin:22px 0;}
+.refl{font-family:'Spectral',serif;font-weight:300;font-size:clamp(.92rem,1.5vw,1.06rem);
+  line-height:1.7;color:var(--cream-dim);}
+
+/* verse line-art motif (matches the mission-stage art treatment) */
+.verse{justify-content:center;}
+.verse-art{width:100%;max-width:188px;margin:0 0 22px;}
+.leaf.right .verse-art{margin-left:auto;margin-right:0;}
+.verse-art svg{width:100%;height:auto;display:block;overflow:visible;}
+/* reflection-only page (used for the long Mallory verse split) */
+.refl-page{justify-content:center;}
+.refl.big{font-size:clamp(1.05rem,1.9vw,1.32rem);line-height:1.78;font-style:italic;color:var(--cream);}
+
+/* cover */
+.cover{align-items:flex-start;}
+.moon-emblem{width:92px;height:92px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fdfbf3,#d8d2c0 45%,#9b9685 80%,#6f6b5e);
+  box-shadow:0 0 50px 6px var(--glow),inset -10px -8px 22px rgba(0,0,0,0.5);margin-bottom:30px;}
+.cover-eyebrow{font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.34em;
+  text-transform:uppercase;font-size:.62rem;color:var(--gold);margin-bottom:18px;}
+.cover-title{font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:clamp(2.4rem,5vw,3.8rem);line-height:1;color:var(--cream);}
+.cover-title em{font-style:italic;color:var(--gold);}
+.cover2{align-items:flex-start;}
+.cover-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2rem;color:var(--gold);}
+.cover-rule{width:60px;height:1px;background:var(--gold-soft);margin:20px 0;}
+.cover-place{font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.22em;
+  text-transform:uppercase;font-size:.72rem;color:var(--steel);line-height:2;}
+.cover-note{margin-top:30px;font-style:italic;font-weight:300;color:var(--cream-dim);font-size:1rem;}
+
+/* journey intro */
+.jintro{align-items:flex-start;}
+.eyebrow2{font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.4em;
+  text-transform:uppercase;font-size:.62rem;color:var(--gold);margin-bottom:18px;}
+.jintro h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-style:italic;
+  font-size:clamp(1.8rem,3.4vw,2.8rem);line-height:1.05;color:var(--cream);margin-bottom:20px;}
+.jintro p{font-weight:300;font-size:clamp(.95rem,1.6vw,1.12rem);color:var(--cream-dim);line-height:1.75;}
+
+/* stage page */
+.stage-a, .stage-b{justify-content:flex-start;padding-top:44px;}
+.stage-a .stage-art{width:100%;max-width:250px;margin:0 auto 22px;}
+.stage-a .stage-art svg{width:100%;height:auto;display:block;overflow:visible;}
+.phase{font-family:'Oswald',sans-serif;font-weight:400;letter-spacing:.24em;text-transform:uppercase;
+  font-size:.62rem;color:var(--gold-soft);margin-bottom:10px;text-align:center;}
+.stage-a h3, .stage-b h3{font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:clamp(1.5rem,2.8vw,2.1rem);color:var(--cream);line-height:1.1;margin-bottom:18px;text-align:center;}
+.stage-b h3.ghost{color:var(--cream-dim);opacity:.55;font-style:italic;}
+.stage-a p, .stage-b p{font-weight:300;font-size:clamp(.95rem,1.6vw,1.12rem);line-height:1.7;margin-bottom:12px;}
+.stage-b{justify-content:center;}
+.stage-b .vrule{margin:0 auto 22px;}
+.lbl{display:block;font-family:'Oswald',sans-serif;font-weight:400;letter-spacing:.2em;
+  text-transform:uppercase;font-size:.56rem;margin-bottom:6px;}
+.moon-side{color:var(--steel);} .moon-side .lbl{color:var(--cream-dim);}
+.you-side{color:var(--cream-dim);padding-left:16px;border-left:2px solid var(--gold-soft);}
+.you-side .lbl{color:var(--gold);}
+
+/* closing + credits */
+.closing{align-items:center;text-align:center;}
+.close-text{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(1.3rem,2.4vw,1.9rem);line-height:1.4;color:var(--cream);}
+.credits{align-items:center;text-align:center;justify-content:center;}
+.quote-final{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(1.4rem,2.6vw,2rem);color:var(--gold);}
+.cred-rule{width:50px;height:1px;background:var(--gold-soft);margin:24px 0;}
+.cred-meta{font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.22em;
+  text-transform:uppercase;font-size:.66rem;color:var(--steel);line-height:2.2;}
+.blank{background:linear-gradient(110deg,var(--page),var(--page-edge));}
+
+/* svg art animation: draw-in when its spread becomes active (stage + verse art) */
+:is(.stage-art,.verse-art) .draw{stroke-dasharray:var(--len,400);stroke-dashoffset:var(--len,400);}
+.spread-live :is(.stage-art,.verse-art) .draw{transition:stroke-dashoffset 1.6s ease .2s;stroke-dashoffset:0;}
+.spread-live :is(.stage-art,.verse-art) .glow-fade{opacity:1;}
+:is(.stage-art,.verse-art) .glow-fade{opacity:0;transition:opacity 1s ease .6s;}
+/* flame flicker + orbit + twinkle in verse/stage art */
+.spread-live :is(.stage-art,.verse-art) .art-flame{animation:flick 1.6s ease-in-out infinite .6s;transform-origin:center;}
+@keyframes flick{0%,100%{transform:scaleY(1);opacity:.9;}50%{transform:scaleY(.8);opacity:1;}}
+:is(.stage-art,.verse-art) .twinkle-art{animation:tw 3.5s ease-in-out infinite;}
+
+/* ===== ENTRANCE ANIMATIONS (all pages) ===== */
+/* Elements with .reveal start hidden; when their spread becomes live they rise+fade
+   in, staggered by --d. .grow expands a rule from the centre. */
+.reveal{opacity:0;transform:translateY(22px);}
+.reveal.grow{transform:scaleX(0);transform-origin:left center;}
+.spread-live .reveal{
+  opacity:1;transform:translateY(0);
+  transition:opacity .9s ease var(--d,0s), transform 1s cubic-bezier(.16,1,.3,1) var(--d,0s);
+}
+.spread-live .reveal.grow{transform:scaleX(1);}
+/* during a page-flip, the turning faces must show their content fully */
+.flip .face .reveal{opacity:1 !important;transform:none !important;}
+.flip .face .reveal.grow{transform:scaleX(1) !important;}
+.flip .face :is(.stage-art,.verse-art) .draw{stroke-dashoffset:0 !important;}
+.flip .face :is(.stage-art,.verse-art) .glow-fade{opacity:1 !important;}
+.prelive :is(.stage-art,.verse-art) .draw, .settled :is(.stage-art,.verse-art) .draw{stroke-dashoffset:0 !important;}
+.prelive :is(.stage-art,.verse-art) .glow-fade, .settled :is(.stage-art,.verse-art) .glow-fade{opacity:1 !important;}
+/* the right page pre-placed beneath a turning leaf shows immediately (no flash) */
+.prelive .reveal{opacity:1;transform:none;}
+.prelive .reveal.grow{transform:scaleX(1);}
+/* a settled host (just landed from a flip) shows final state with NO transition,
+   so nothing blinks or re-animates after the page turn */
+.settled .reveal{opacity:1 !important;transform:none !important;transition:none !important;}
+.settled .reveal.grow{transform:scaleX(1) !important;}
+.settled .verse blockquote.reveal{letter-spacing:0 !important;}
+/* cover moon rises + gently floats once revealed */
+.cover .moon-emblem.reveal{transform:translateY(40px) scale(.7);}
+.spread-live .cover .moon-emblem.reveal{transform:translateY(0) scale(1);
+  transition:opacity 1s ease, transform 1.4s cubic-bezier(.16,1,.3,1);}
+.spread-live .cover .moon-emblem{animation:floatM 9s ease-in-out infinite 1.4s;}
+@keyframes floatM{0%,100%{filter:brightness(1);}50%{filter:brightness(1.06);}}
+/* blockquote gets a subtle letterspacing settle for gravitas */
+.verse blockquote.reveal{letter-spacing:.04em;}
+.spread-live .verse blockquote.reveal{letter-spacing:0;
+  transition:opacity 1s ease var(--d,0s), transform 1.1s cubic-bezier(.16,1,.3,1) var(--d,0s), letter-spacing 1.4s ease var(--d,0s);}
+
+/* hint */
+#hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:55;
+  font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--cream-dim);opacity:.5;text-align:center;line-height:1.8;}
+</style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <radialGradient id="moonGrad" cx="38%" cy="32%" r="75%">
+          <stop offset="0%" stop-color="#fdfbf3"/>
+          <stop offset="48%" stop-color="#d8d2c0"/>
+          <stop offset="82%" stop-color="#9b9685"/>
+          <stop offset="100%" stop-color="#5f5b50"/>
+        </radialGradient>
+        <radialGradient id="earthGrad" cx="40%" cy="35%" r="75%">
+          <stop offset="0%" stop-color="#8fb6e8"/>
+          <stop offset="55%" stop-color="#3f6ba8"/>
+          <stop offset="100%" stop-color="#16294a"/>
+        </radialGradient>
+        <linearGradient id="flameGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fff6d8"/>
+          <stop offset="40%" stop-color="#e8b85f"/>
+          <stop offset="100%" stop-color="#c8542a" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="goldStroke" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#e8b85f"/>
+          <stop offset="100%" stop-color="#c89a4a"/>
+        </linearGradient>
+        <linearGradient id="heatGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fff2c4"/>
+          <stop offset="45%" stop-color="#e8b85f"/>
+          <stop offset="100%" stop-color="#c8351a"/>
+        </linearGradient>
+        <radialGradient id="haze" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#e8b85f" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#e8b85f" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+    </svg>
+  <div id="book">
+    <div class="leaf left"><div class="pg-host" id="hostL"></div></div>
+    <div class="leaf right"><div class="pg-host" id="hostR"></div></div>
+  </div>
+  <div id="hint">Space / click — play · &rarr; &larr; — step · G — record full book (video) · C — record this spread &nbsp;&nbsp; (auto-plays on load)</div>
+
+  <!-- page source -->
+  <script id="pagesrc" type="text/template"><!--PAGE-->
+<div class="pg cover" data-anim="cover">
+  <div class="moon-emblem reveal" style="--d:0s"></div>
+  <div class="cover-eyebrow reveal" style="--d:.5s">Rice University &middot; September 12, 1962</div>
+  <h1 class="cover-title reveal" style="--d:.8s">We Choose<br>to Go to<br>the <em>Moon</em></h1>
+</div>
+<!--PAGE-->
+<div class="pg cover2" data-anim>
+  <div class="cover-sub reveal" style="--d:.2s">John F. Kennedy</div>
+  <div class="cover-rule reveal grow" style="--d:.5s"></div>
+  <div class="cover-place reveal" style="--d:.7s">Address at Rice University<br>on the Nation’s Space Effort<br>Houston, Texas</div>
+  <div class="cover-note reveal" style="--d:1s">A reading, with reflections for our own time.</div>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">1</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <circle class="twinkle-art" cx="34" cy="26" r="1" fill="#fff" opacity=".6"/>
+  <circle class="twinkle-art" cx="168" cy="22" r="1.1" fill="#fff" opacity=".6" style="animation-delay:1s"/>
+  <ellipse class="glow-fade" cx="100" cy="66" rx="70" ry="40" fill="url(#haze)" opacity=".35"/>
+  <path class="draw" style="--len:160" d="M74 28 L126 28 L104 66 L126 104 L74 104 L96 66 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.8"/>
+  <path class="glow-fade" d="M96 66 L104 66 L116 96 L84 96 Z" fill="url(#flameGrad)" opacity=".5"/>
+  <circle class="draw" style="--len:70" cx="100" cy="66" r="2.4" fill="var(--gold)"/>
+  <line class="draw" style="--len:30" x1="70" y1="28" x2="130" y2="28" stroke="var(--steel)" stroke-width="1.2" opacity=".5"/>
+  <line class="draw" style="--len:30" x1="70" y1="104" x2="130" y2="104" stroke="var(--steel)" stroke-width="1.2" opacity=".5"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">We meet in an hour of change and challenge, in a decade of hope and fear, in an age of both <span class="accent">knowledge and ignorance.</span></blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">The ground is always shifting beneath us &mdash; new tools, new fears, new unknowns. The point isn&rsquo;t to wait for certainty. It&rsquo;s to act inside the uncertainty, knowing that hope and fear have always shared the same room.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">2</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <circle class="twinkle-art" cx="150" cy="24" r="1.1" fill="#fff" opacity=".6"/>
+  <path class="draw" style="--len:260" d="M20 108 L78 40 L104 74 L130 30 L180 108 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.8"/>
+  <path class="draw" style="--len:120" d="M78 40 L66 56 L90 56 Z" fill="none" stroke="var(--steel)" stroke-width="1.2" opacity=".5"/>
+  <line class="draw" style="--len:40" x1="130" y1="30" x2="130" y2="14" stroke="url(#goldStroke)" stroke-width="1.6"/>
+  <path class="draw glow-fade" style="--len:30" d="M130 14 L146 18 L130 24 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.4"/>
+  <line class="draw" style="--len:170" x1="14" y1="108" x2="186" y2="108" stroke="var(--gold-soft)" stroke-width="1" opacity=".5"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">But why, some say, the Moon? Why choose this as our goal? And they may well ask, <span class="accent">why climb the highest mountain?</span></blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">People will always ask why you&rsquo;d attempt the hard thing &mdash; the business, the craft, the recovery, the leap. The honest answer is rarely practical. We choose the steep climb because the easy path leaves the best of us unused.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">3</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <ellipse class="glow-fade" cx="100" cy="70" rx="74" ry="30" fill="url(#haze)" opacity=".3"/>
+  <path class="draw" style="--len:240" d="M22 96 Q100 18 178 96" fill="none" stroke="var(--steel)" stroke-width="1.2" stroke-dasharray="3 5" opacity=".55"/>
+  <path class="draw" style="--len:60" d="M30 96 q-4 6 0 10 q70 -10 140 0 q4 -4 0 -10" fill="none" stroke="url(#goldStroke)" stroke-width="1.4" opacity=".6"/>
+  <g transform="translate(100 50) rotate(8)">
+    <path class="draw glow-fade" style="--len:60" d="M-12 0 L12 0 L0 -7 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.6"/>
+    <line class="draw" style="--len:20" x1="0" y1="0" x2="0" y2="8" stroke="url(#goldStroke)" stroke-width="1.2"/>
+  </g>
+  <circle class="twinkle-art" cx="40" cy="30" r="1" fill="#fff" opacity=".6"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">Why, 35 years ago, fly the Atlantic? <span class="accent">Why does Rice play Texas?</span></blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">Rice was the smaller school; Texas, the powerhouse. Kennedy&rsquo;s joke carried the whole argument: you don&rsquo;t measure yourself against the weak opponent. You step onto the field with the giant precisely because you might lose &mdash; because that&rsquo;s where you find out what you&rsquo;re made of. Pick the contest that&rsquo;s bigger than you.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">4</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <circle class="glow-fade" cx="150" cy="40" r="22" fill="url(#moonGrad)"/>
+  <circle cx="144" cy="34" r="3" fill="#6f6b5e" opacity=".4"/>
+  <path class="draw" style="--len:200" d="M18 110 L70 110 L70 80 L120 80 L120 50 L182 50" fill="none" stroke="url(#goldStroke)" stroke-width="1.8"/>
+  <circle class="draw glow-fade" style="--len:30" cx="182" cy="50" r="3" fill="var(--gold)"/>
+  <line class="draw" style="--len:30" x1="70" y1="110" x2="70" y2="80" stroke="var(--steel)" stroke-width="1" opacity=".4"/>
+  <line class="draw" style="--len:30" x1="120" y1="80" x2="120" y2="50" stroke="var(--steel)" stroke-width="1" opacity=".4"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">We choose to go to the Moon in this decade and do the other things, <span class="accent">not because they are easy, but because they are hard</span> &mdash; because that goal will serve to organize and measure the best of our energies and skills.</blockquote>
+</div>
+<!--PAGE-->
+<div class="pg verse refl-page" data-anim>
+  <div class="vrule reveal grow" style="--d:.2s"></div>
+  <p class="refl big reveal" style="--d:.4s">The difficulty isn&rsquo;t the cost of the goal &mdash; it&rsquo;s the entire point. A hard target organizes scattered effort, demands your full capability, and shows you who you&rsquo;re able to become. Choose the goal that stretches you, not the one that flatters you.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">5</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <ellipse class="glow-fade" cx="140" cy="66" rx="46" ry="46" fill="url(#haze)" opacity=".3"/>
+  <circle class="draw" style="--len:300" cx="140" cy="66" r="34" fill="none" stroke="url(#goldStroke)" stroke-width="1.6"/>
+  <circle class="draw" style="--len:170" cx="140" cy="66" r="20" fill="none" stroke="var(--steel)" stroke-width="1.2" opacity=".6"/>
+  <circle class="draw glow-fade" style="--len:50" cx="140" cy="66" r="5" fill="var(--gold)"/>
+  <path class="draw" style="--len:120" d="M20 110 L130 70" fill="none" stroke="url(#goldStroke)" stroke-width="1.8"/>
+  <path class="draw" style="--len:30" d="M20 110 L30 104 L28 116 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.2"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">Because that challenge is one that we are willing to accept, one we are <span class="accent">unwilling to postpone,</span> and one which we intend to win.</blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">&ldquo;Someday&rdquo; is where ambitions go to die. The decision that matters is the one to start now &mdash; to accept the challenge, refuse to delay it, and commit to finishing. Resolve is a choice you make before you know how.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">6</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <path class="draw" style="--len:200" d="M10 100 Q60 90 100 96 Q150 102 190 90" fill="none" stroke="url(#goldStroke)" stroke-width="1.6"/>
+  <g class="glow-fade" fill="var(--steel)" opacity=".75">
+    <ellipse cx="40" cy="108" rx="4" ry="2.2"/>
+    <ellipse cx="60" cy="100" rx="4" ry="2.2"/>
+    <ellipse cx="84" cy="106" rx="4" ry="2.2"/>
+    <ellipse cx="106" cy="98" rx="4" ry="2.2"/>
+    <ellipse cx="130" cy="102" rx="4" ry="2.2"/>
+  </g>
+  <circle class="glow-fade" cx="170" cy="44" r="16" fill="url(#moonGrad)"/>
+  <circle class="twinkle-art" cx="44" cy="28" r="1" fill="#fff" opacity=".6"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">This city of Houston, this State of Texas, this country of the United States was not built by those who waited and rested. This country was conquered by <span class="accent">those who moved forward</span> &mdash; and so will space.</blockquote>
+</div>
+<!--PAGE-->
+<div class="pg verse refl-page" data-anim>
+  <div class="vrule reveal grow" style="--d:.2s"></div>
+  <p class="refl big reveal" style="--d:.4s">Nothing worth having was built by the people who hung back. Whatever you&rsquo;re creating &mdash; a company, a skill, a life &mdash; it belongs to those who keep moving forward, not those who wait for the perfect moment that never arrives.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">7</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <ellipse class="glow-fade" cx="100" cy="70" rx="80" ry="44" fill="url(#haze)" opacity=".3"/>
+  <path class="draw" style="--len:180" d="M30 96 A70 70 0 0 1 170 96" fill="none" stroke="url(#goldStroke)" stroke-width="1.8"/>
+  <path class="draw" style="--len:150" d="M44 96 A56 56 0 0 1 156 96" fill="none" stroke="var(--steel)" stroke-width="1.2" opacity=".6"/>
+  <path class="draw" style="--len:120" d="M58 96 A42 42 0 0 1 142 96" fill="none" stroke="var(--steel)" stroke-width="1" opacity=".4"/>
+  <line class="draw" style="--len:170" x1="20" y1="96" x2="180" y2="96" stroke="url(#goldStroke)" stroke-width="1" opacity=".5"/>
+  <circle class="draw glow-fade" style="--len:30" cx="100" cy="96" r="2.4" fill="var(--gold)"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">The greater our knowledge increases, <span class="accent">the greater our ignorance unfolds.</span></blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">Mastery doesn&rsquo;t shrink the unknown &mdash; it reveals how vast it really is. Stay a student. The moment you stop seeing how much is left to learn is the moment you stop growing.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">8</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <ellipse class="glow-fade" cx="100" cy="66" rx="40" ry="46" fill="url(#haze)" opacity=".3"/>
+  <path class="draw" style="--len:220" d="M100 22 L134 36 L134 70 Q134 100 100 112 Q66 100 66 70 L66 36 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.8"/>
+  <line class="draw" style="--len:80" x1="100" y1="30" x2="100" y2="104" stroke="var(--steel)" stroke-width="1.2" opacity=".5"/>
+  <line class="draw" style="--len:50" x1="74" y1="58" x2="126" y2="58" stroke="var(--steel)" stroke-width="1.2" opacity=".5"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">All great and honorable actions are accompanied with great difficulties, and both must be <span class="accent">enterprised and overcome with answerable courage.</span></blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">Difficulty isn&rsquo;t a sign you&rsquo;ve gone wrong &mdash; it&rsquo;s the toll on every worthwhile road. Expect the obstacles, and meet them with courage equal to the size of what you&rsquo;re attempting.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">9</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <g class="draw" style="--len:30" stroke="var(--steel)" stroke-width="1.2" opacity=".45">
+    <line x1="60" y1="40" x2="60" y2="92"/>
+    <line x1="90" y1="40" x2="90" y2="92"/>
+    <line x1="120" y1="40" x2="120" y2="92"/>
+  </g>
+  <path class="draw" style="--len:170" d="M18 66 L168 66" fill="none" stroke="url(#goldStroke)" stroke-width="2"/>
+  <path class="draw glow-fade" style="--len:40" d="M168 66 L154 58 L156 74 Z" fill="var(--gold)" stroke="url(#goldStroke)" stroke-width="1.2"/>
+  <ellipse class="glow-fade" cx="93" cy="66" rx="60" ry="20" fill="url(#haze)" opacity=".25"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">Man, in his quest for knowledge and progress, is <span class="accent">determined and cannot be deterred.</span></blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">Real determination isn&rsquo;t loud &mdash; it&rsquo;s simply unstoppable. When the drive to learn and to build is genuine, setbacks become detours, not endings. Decide what you will not be talked out of.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">10</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <path class="draw" style="--len:200" d="M20 100 Q100 50 180 30" fill="none" stroke="var(--steel)" stroke-width="1.2" stroke-dasharray="3 5" opacity=".5"/>
+  <g transform="translate(168 34) rotate(-20)">
+    <path class="draw glow-fade" style="--len:50" d="M-11 0 L11 0 L0 -8 Z" fill="var(--gold)" stroke="url(#goldStroke)" stroke-width="1.6"/>
+  </g>
+  <g transform="translate(120 56) rotate(-20)" opacity=".7">
+    <path class="draw" style="--len:40" d="M-8 0 L8 0 L0 -6 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.3"/>
+  </g>
+  <g transform="translate(78 78) rotate(-20)" opacity=".5">
+    <path class="draw" style="--len:40" d="M-7 0 L7 0 L0 -5 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.2"/>
+  </g>
+  <circle class="twinkle-art" cx="40" cy="28" r="1" fill="#fff" opacity=".6"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">This generation does not intend to founder in the backwash of the coming age of space. <span class="accent">We mean to be a part of it &mdash; we mean to lead it.</span></blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">The future is being written with or without you. You can drift in someone else&rsquo;s wake, or step up and help shape the thing itself. In your field, in this moment, choose to lead rather than be carried.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">11</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <circle class="twinkle-art" cx="40" cy="26" r="1" fill="#fff" opacity=".6"/>
+  <circle class="twinkle-art" cx="150" cy="20" r="1.1" fill="#fff" opacity=".6" style="animation-delay:1s"/>
+  <line class="draw" style="--len:40" x1="100" y1="36" x2="100" y2="92" stroke="url(#goldStroke)" stroke-width="1.6"/>
+  <path class="draw glow-fade" style="--len:80" d="M100 40 Q128 54 100 74 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.5"/>
+  <path class="draw glow-fade" style="--len:70" d="M100 46 Q76 58 100 78" fill="none" stroke="url(#goldStroke)" stroke-width="1.4"/>
+  <path class="draw" style="--len:90" d="M72 92 L128 92 L118 104 L82 104 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.6"/>
+  <path class="draw" style="--len:200" d="M12 112 Q40 106 64 112 T120 112 T180 112" fill="none" stroke="var(--steel)" stroke-width="1.2" opacity=".55"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">We set sail on this new sea because there is <span class="accent">new knowledge to be gained, and new rights to be won,</span> and they must be won and used for the progress of all people.</blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">The most meaningful work points beyond yourself. Gain the knowledge, win the ground &mdash; then use it for something larger than your own benefit. Progress that lifts others is the kind that lasts.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">12</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <ellipse class="glow-fade" cx="100" cy="80" rx="50" ry="30" fill="url(#haze)" opacity=".35"/>
+  <path class="draw" style="--len:120" d="M70 70 L92 92 L138 40" fill="none" stroke="url(#goldStroke)" stroke-width="2"/>
+  <path class="art-flame glow-fade" d="M90 96 Q100 130 110 96 Q105 116 100 126 Q95 116 90 96 Z" fill="url(#flameGrad)"/>
+  <circle class="twinkle-art" cx="150" cy="30" r="1.1" fill="#fff" opacity=".6"/>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">We must do all this, and do it right, and do it first before this decade is out &mdash; <span class="accent">then we must be bold.</span></blockquote>
+  <div class="vrule reveal grow" style="--d:.85s"></div>
+  <p class="refl reveal" style="--d:1.05s">Excellence, speed, and nerve, all at once. Set a deadline that scares you a little, hold yourself to doing it right, and then summon the boldness to actually begin. Standards and audacity are not opposites &mdash; greatness needs both.</p>
+</div>
+<!--PAGE-->
+<div class="pg verse" data-anim>
+  <div class="folio reveal" style="--d:.1s">13</div>
+  <div class="verse-art reveal" style="--d:.2s"><svg viewBox="0 0 200 130">
+  <circle class="twinkle-art" cx="36" cy="24" r="1.1" fill="#fff" opacity=".7"/>
+  <circle class="twinkle-art" cx="160" cy="20" r="1.2" fill="#fff" opacity=".7" style="animation-delay:1.2s"/>
+  <circle class="twinkle-art" cx="120" cy="34" r="1" fill="#fff" opacity=".6" style="animation-delay:2s"/>
+  <path class="draw" style="--len:260" d="M14 112 L70 58 L96 84 L128 36 L186 112 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.8"/>
+  <g class="draw glow-fade" style="--len:50" transform="translate(128 36)" stroke="var(--gold)" stroke-width="1.6" fill="none" stroke-linecap="round">
+    <circle cx="0" cy="-12" r="3" fill="var(--gold)" stroke="none"/>
+    <line x1="0" y1="-9" x2="0" y2="2"/>
+    <line x1="0" y1="-4" x2="-6" y2="2"/>
+    <line x1="0" y1="-4" x2="6" y2="-2"/>
+    <line x1="0" y1="2" x2="-5" y2="12"/>
+    <line x1="0" y1="2" x2="6" y2="12"/>
+  </g>
+</svg></div>
+  <blockquote class="reveal" style="--d:.45s">The great British explorer George Mallory, who was to die on Mount Everest, was asked why did he want to climb it. He said, <span class="accent">&ldquo;Because it is there.&rdquo;</span> Well, space is there, and we&rsquo;re going to climb it, and the Moon and the planets are there, and <span class="accent">new hopes for knowledge and peace are there.</span></blockquote>
+</div>
+<!--PAGE-->
+<div class="pg verse refl-page" data-anim>
+  <div class="vrule reveal grow" style="--d:.2s"></div>
+  <p class="refl big reveal" style="--d:.4s">Sometimes the deepest reason is the simplest one: it&rsquo;s there. The mountain in front of you doesn&rsquo;t need a business case to be worth climbing. The challenge exists, you are here, and the hope on the far side is real. That is reason enough to begin.</p>
+</div>
+<!--PAGE-->
+<div class="pg jintro" data-anim>
+  <div class="eyebrow2 reveal" style="--d:.15s">The Journey</div>
+  <h2 class="reveal" style="--d:.4s">Eight times it could have failed.<br>It didn&rsquo;t.</h2>
+  <p class="reveal" style="--d:.75s">Going to the Moon was never one heroic leap. It was a chain of distinct, terrifying problems, each solved in turn. Anything hard you build from zero works the same way &mdash; not one impossible feat, but a sequence of difficult stages, survived one at a time. Here is the whole arc, and what each stage teaches about doing something that looks impossible.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-a" data-anim>
+  <div class="stage-art"><svg viewBox="0 0 300 200">
+            <ellipse class="glow-fade" cx="150" cy="150" rx="90" ry="40" fill="url(#haze)"/>
+            <!-- launch tower -->
+            <line class="draw" style="--len:120" x1="90" y1="46" x2="90" y2="158" stroke="var(--steel)" stroke-width="1.5" opacity="0.5"/>
+            <line x1="90" y1="62" x2="118" y2="66" stroke="var(--steel)" stroke-width="1.2" opacity="0.4"/>
+            <line x1="90" y1="86" x2="118" y2="90" stroke="var(--steel)" stroke-width="1.2" opacity="0.4"/>
+            <line x1="90" y1="110" x2="118" y2="114" stroke="var(--steel)" stroke-width="1.2" opacity="0.4"/>
+            <!-- rocket body -->
+            <path class="draw" style="--len:340" d="M150 30 C140 42 136 70 136 110 L136 150 L164 150 L164 110 C164 70 160 42 150 30 Z" fill="none" stroke="url(#goldStroke)" stroke-width="2"/>
+            <path d="M150 34 C142 46 139 72 139 110 L139 148 L161 148 L161 110 C161 72 158 46 150 34 Z" fill="var(--ink)" opacity="0.7"/>
+            <!-- fins -->
+            <path class="draw" style="--len:60" d="M136 132 L122 156 L136 150 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.6"/>
+            <path class="draw" style="--len:60" d="M164 132 L178 156 L164 150 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.6"/>
+            <circle cx="150" cy="78" r="5" fill="none" stroke="var(--steel)" stroke-width="1.4"/>
+            <!-- flame -->
+            <path class="art-flame glow-fade" d="M140 150 Q150 200 160 150 Q155 172 150 188 Q145 172 140 150 Z" fill="url(#flameGrad)"/>
+          </svg></div>
+  <div class="phase reveal" style="--d:.2s">Stage 1 &middot; Ignition &amp; Launch</div>
+  <h3 class="reveal" style="--d:.4s">Breaking free of the ground</h3>
+  <p class="moon-side reveal" style="--d:.7s"><span class="lbl">The Mission</span>The hardest energy of the entire mission is spent in the first few minutes. <b>Millions of pounds of thrust just to overcome gravity and lift off the pad</b> &mdash; the rocket burns most of its fuel fighting the Earth that&rsquo;s holding it down.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-b" data-anim>
+  <div class="phase reveal" style="--d:.15s">Stage 1 &middot; Ignition &amp; Launch</div>
+  <h3 class="ghost reveal" style="--d:.3s">Breaking free of the ground</h3>
+  <div class="vrule reveal grow" style="--d:.55s"></div>
+  <p class="you-side reveal" style="--d:.75s"><span class="lbl">Your Climb</span>Starting is the most expensive moment. <b>The inertia of zero is enormous</b> &mdash; the blank page, the empty business, the first day. It will feel like you&rsquo;re spending everything just to begin moving. That&rsquo;s normal. Liftoff always costs the most.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-a" data-anim>
+  <div class="stage-art"><svg viewBox="0 0 300 200">
+            <!-- pressure waves -->
+            <path class="draw glow-fade" style="--len:300" d="M70 150 Q150 120 230 60" fill="none" stroke="var(--steel)" stroke-width="1" opacity="0.35"/>
+            <path class="draw glow-fade" style="--len:300" d="M84 162 Q160 130 244 70" fill="none" stroke="var(--steel)" stroke-width="1" opacity="0.25"/>
+            <!-- ascent trajectory -->
+            <path class="draw" style="--len:260" d="M60 178 Q120 150 196 70" fill="none" stroke="url(#goldStroke)" stroke-width="1.6" stroke-dasharray="2 5" opacity="0.7"/>
+            <!-- rocket tilted -->
+            <g transform="rotate(38 200 64)">
+              <path class="draw" style="--len:200" d="M200 38 C194 46 192 64 192 88 L192 104 L208 104 L208 88 C208 64 206 46 200 38 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.8"/>
+              <path class="draw" style="--len:40" d="M192 96 L182 112 L192 104 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.4"/>
+              <path class="draw" style="--len:40" d="M208 96 L218 112 L208 104 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.4"/>
+              <circle cx="200" cy="62" r="3.5" fill="none" stroke="var(--steel)" stroke-width="1.2"/>
+              <path class="art-flame glow-fade" d="M194 104 Q200 138 206 104 Q202 122 200 132 Q198 122 194 104 Z" fill="url(#flameGrad)"/>
+            </g>
+            <!-- stress sparks at Max Q point -->
+            <g class="glow-fade" stroke="var(--gold)" stroke-width="1.3" opacity="0.8">
+              <line x1="150" y1="118" x2="150" y2="108"/>
+              <line x1="138" y1="126" x2="130" y2="122"/>
+              <line x1="162" y1="126" x2="170" y2="122"/>
+            </g>
+          </svg></div>
+  <div class="phase reveal" style="--d:.2s">Stage 2 &middot; Max Q &amp; Ascent</div>
+  <h3 class="reveal" style="--d:.4s">The point of maximum stress</h3>
+  <p class="moon-side reveal" style="--d:.7s"><span class="lbl">The Mission</span>Soon after launch comes &ldquo;Max Q&rdquo; &mdash; the moment of greatest aerodynamic pressure, when speed and thick air combine to put the most violent strain on the vehicle. <b>If the structure holds here, it will hold.</b></p>
+</div>
+<!--PAGE-->
+<div class="pg stage-b" data-anim>
+  <div class="phase reveal" style="--d:.15s">Stage 2 &middot; Max Q &amp; Ascent</div>
+  <h3 class="ghost reveal" style="--d:.3s">The point of maximum stress</h3>
+  <div class="vrule reveal grow" style="--d:.55s"></div>
+  <p class="you-side reveal" style="--d:.75s"><span class="lbl">Your Climb</span>Early on, before any reward arrives, the pressure peaks &mdash; doubt, exhaustion, the temptation to quit. <b>This is the test, not a sign you chose wrong.</b> Hold your structure through Max Q and the air thins out ahead.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-a" data-anim>
+  <div class="stage-art"><svg viewBox="0 0 300 200">
+            <circle class="twinkle-art" cx="70" cy="40" r="1" fill="#fff" opacity="0.7"/>
+            <circle class="twinkle-art" cx="200" cy="30" r="1.2" fill="#fff" opacity="0.6" style="animation-delay:1s"/>
+            <circle class="twinkle-art" cx="250" cy="120" r="1" fill="#fff" opacity="0.6" style="animation-delay:2s"/>
+            <!-- Earth -->
+            <circle class="glow-fade" cx="58" cy="150" r="42" fill="url(#haze)" opacity="0.4"/>
+            <circle cx="58" cy="150" r="30" fill="url(#earthGrad)"/>
+            <path d="M44 140 q10 -6 20 -2 q8 4 2 12 q-10 6 -22 0 z" fill="#2f5a3a" opacity="0.55"/>
+            <path d="M62 158 q10 2 16 -4" fill="none" stroke="#2f5a3a" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
+            <!-- Moon -->
+            <circle cx="244" cy="52" r="20" fill="url(#moonGrad)"/>
+            <circle cx="238" cy="46" r="3" fill="#6f6b5e" opacity="0.4"/>
+            <circle cx="250" cy="58" r="2" fill="#6f6b5e" opacity="0.4"/>
+            <!-- trajectory -->
+            <path class="draw" style="--len:300" d="M82 132 Q150 40 224 56" fill="none" stroke="url(#goldStroke)" stroke-width="1.8" stroke-dasharray="3 6"/>
+            <!-- midpoint correction marker -->
+            <g class="glow-fade">
+              <circle cx="150" cy="74" r="4" fill="none" stroke="var(--gold)" stroke-width="1.4"/>
+              <line x1="150" y1="64" x2="150" y2="68" stroke="var(--gold)" stroke-width="1.2"/>
+              <line x1="150" y1="80" x2="150" y2="84" stroke="var(--gold)" stroke-width="1.2"/>
+            </g>
+            <!-- craft -->
+            <circle class="glow-fade" cx="116" cy="98" r="3" fill="var(--cream)"/>
+          </svg></div>
+  <div class="phase reveal" style="--d:.2s">Stage 3 &middot; Trajectory &amp; Transit</div>
+  <h3 class="reveal" style="--d:.4s">Aiming at where the Moon will be</h3>
+  <p class="moon-side reveal" style="--d:.7s"><span class="lbl">The Mission</span>You don&rsquo;t aim at the Moon &mdash; you aim at where it <b>will be</b> three days later, across 240,000 miles, with course corrections along the way. A fraction of a degree off at the start becomes thousands of miles off at the end.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-b" data-anim>
+  <div class="phase reveal" style="--d:.15s">Stage 3 &middot; Trajectory &amp; Transit</div>
+  <h3 class="ghost reveal" style="--d:.3s">Aiming at where the Moon will be</h3>
+  <div class="vrule reveal grow" style="--d:.55s"></div>
+  <p class="you-side reveal" style="--d:.75s"><span class="lbl">Your Climb</span>Direction matters more than speed. <b>Small corrections, made early and often, are everything.</b> You won&rsquo;t see the target for a long stretch &mdash; the work is trusting the heading and adjusting as you go, not waiting to feel close.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-a" data-anim>
+  <div class="stage-art"><svg viewBox="0 0 300 200">
+            <circle class="twinkle-art" cx="40" cy="40" r="1" fill="#fff" opacity="0.6"/>
+            <circle class="twinkle-art" cx="260" cy="60" r="1" fill="#fff" opacity="0.6" style="animation-delay:1.5s"/>
+            <!-- Moon -->
+            <circle class="glow-fade" cx="150" cy="100" r="78" fill="url(#haze)" opacity="0.3"/>
+            <circle cx="150" cy="100" r="50" fill="url(#moonGrad)"/>
+            <circle cx="132" cy="84" r="7" fill="#6f6b5e" opacity="0.35"/>
+            <circle cx="168" cy="116" r="5" fill="#6f6b5e" opacity="0.3"/>
+            <circle cx="160" cy="78" r="3.5" fill="#6f6b5e" opacity="0.3"/>
+            <!-- orbit ellipse -->
+            <ellipse class="draw" style="--len:430" cx="150" cy="100" rx="92" ry="62" fill="none" stroke="url(#goldStroke)" stroke-width="1.6" stroke-dasharray="4 5" transform="rotate(-18 150 100)"/>
+            <!-- approach line -->
+            <path class="draw" style="--len:120" d="M250 28 Q236 44 232 64" fill="none" stroke="var(--steel)" stroke-width="1.4" stroke-dasharray="2 4" opacity="0.6"/>
+            <!-- insertion burn -->
+            <g class="glow-fade" transform="translate(238 70)">
+              <circle r="4" fill="var(--cream)"/>
+              <path class="art-flame" d="M2 0 Q16 -4 24 2 Q14 4 2 4 Z" fill="url(#flameGrad)"/>
+            </g>
+          </svg></div>
+  <div class="phase reveal" style="--d:.2s">Stage 4 &middot; Lunar Orbit Insertion</div>
+  <h3 class="reveal" style="--d:.4s">Caught by a new gravity</h3>
+  <p class="moon-side reveal" style="--d:.7s"><span class="lbl">The Mission</span>Arriving isn&rsquo;t enough &mdash; the craft must fire its engine to <b>slow down at exactly the right instant</b> to be captured into orbit. Too fast and it slingshots past forever; too slow and it crashes. One burn, on the far side, out of contact.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-b" data-anim>
+  <div class="phase reveal" style="--d:.15s">Stage 4 &middot; Lunar Orbit Insertion</div>
+  <h3 class="ghost reveal" style="--d:.3s">Caught by a new gravity</h3>
+  <div class="vrule reveal grow" style="--d:.55s"></div>
+  <p class="you-side reveal" style="--d:.75s"><span class="lbl">Your Climb</span>Reaching the goal demands a different skill than chasing it did. <b>You have to slow down and let yourself be held by the new thing</b> &mdash; the new role, the new level. The discipline that got you here must give way to the discipline of arriving well.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-a" data-anim>
+  <div class="stage-art"><svg viewBox="0 0 300 200">
+            <circle class="twinkle-art" cx="60" cy="36" r="1.1" fill="#fff" opacity="0.6"/>
+            <circle class="twinkle-art" cx="230" cy="28" r="1" fill="#fff" opacity="0.6" style="animation-delay:1.2s"/>
+            <!-- lunar surface -->
+            <path class="draw" style="--len:340" d="M0 168 Q40 158 80 164 Q120 170 150 160 Q190 148 230 162 Q270 172 300 160 L300 200 L0 200 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.5"/>
+            <ellipse cx="100" cy="178" rx="14" ry="3" fill="#000" opacity="0.3"/>
+            <ellipse cx="210" cy="180" rx="10" ry="2.5" fill="#000" opacity="0.3"/>
+            <!-- descent path -->
+            <path class="draw" style="--len:160" d="M250 30 Q200 60 160 96" fill="none" stroke="var(--steel)" stroke-width="1.3" stroke-dasharray="2 5" opacity="0.55"/>
+            <!-- lander (LM): octagonal descent stage + legs -->
+            <g transform="translate(150 104)">
+              <path class="draw" style="--len:120" d="M-16 0 L-10 -12 L10 -12 L16 0 L10 10 L-10 10 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.8"/>
+              <path class="draw" style="--len:40" d="M-2 -12 L-2 -22 L6 -22 L6 -12" fill="none" stroke="url(#goldStroke)" stroke-width="1.4"/>
+              <line class="draw" style="--len:30" x1="-12" y1="8" x2="-22" y2="26" stroke="url(#goldStroke)" stroke-width="1.6"/>
+              <line class="draw" style="--len:30" x1="12" y1="8" x2="22" y2="26" stroke="url(#goldStroke)" stroke-width="1.6"/>
+              <line class="draw" style="--len:24" x1="-4" y1="10" x2="-8" y2="28" stroke="url(#goldStroke)" stroke-width="1.4"/>
+              <line class="draw" style="--len:24" x1="4" y1="10" x2="8" y2="28" stroke="url(#goldStroke)" stroke-width="1.4"/>
+              <!-- thrust plume -->
+              <path class="art-flame glow-fade" d="M-7 10 Q0 44 7 10 Q3 30 0 40 Q-3 30 -7 10 Z" fill="url(#flameGrad)"/>
+            </g>
+            <ellipse class="glow-fade" cx="150" cy="166" rx="30" ry="6" fill="url(#haze)" opacity="0.5"/>
+          </svg></div>
+  <div class="phase reveal" style="--d:.2s">Stage 5 &middot; Descent &amp; Landing</div>
+  <h3 class="reveal" style="--d:.4s">The last five hundred feet</h3>
+  <p class="moon-side reveal" style="--d:.7s"><span class="lbl">The Mission</span>The descent to the surface was the most nerve-wracking phase &mdash; alarms firing, fuel running low, the commander taking manual control to clear a boulder field. <b>The final approach is where the whole mission is won or lost.</b></p>
+</div>
+<!--PAGE-->
+<div class="pg stage-b" data-anim>
+  <div class="phase reveal" style="--d:.15s">Stage 5 &middot; Descent &amp; Landing</div>
+  <h3 class="ghost reveal" style="--d:.3s">The last five hundred feet</h3>
+  <div class="vrule reveal grow" style="--d:.55s"></div>
+  <p class="you-side reveal" style="--d:.75s"><span class="lbl">Your Climb</span>The closer you get to finishing, the more it demands of you. <b>The last stretch is hands-on, improvised, low on reserves</b> &mdash; the launch, the defense, the opening night. Expect the alarms. Fly it down anyway.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-a" data-anim>
+  <div class="stage-art"><svg viewBox="0 0 300 200">
+            <circle class="twinkle-art" cx="80" cy="30" r="1" fill="#fff" opacity="0.6"/>
+            <circle class="twinkle-art" cx="200" cy="24" r="1.1" fill="#fff" opacity="0.6" style="animation-delay:1.4s"/>
+            <!-- Earthrise -->
+            <circle class="glow-fade" cx="232" cy="58" r="34" fill="url(#haze)" opacity="0.4"/>
+            <circle cx="232" cy="58" r="22" fill="url(#earthGrad)"/>
+            <path d="M220 50 q10 -5 18 -1 q6 4 0 10 q-10 5 -20 0 z" fill="#2f5a3a" opacity="0.5"/>
+            <!-- horizon -->
+            <path class="draw" style="--len:340" d="M0 150 Q80 138 150 144 Q220 150 300 138 L300 200 L0 200 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.5"/>
+            <!-- footprints -->
+            <ellipse class="glow-fade" cx="70" cy="170" rx="4" ry="2" fill="#000" opacity="0.4"/>
+            <ellipse class="glow-fade" cx="84" cy="176" rx="4" ry="2" fill="#000" opacity="0.4"/>
+            <ellipse class="glow-fade" cx="98" cy="172" rx="4" ry="2" fill="#000" opacity="0.4"/>
+            <!-- flag -->
+            <g transform="translate(150 96)">
+              <line class="draw" style="--len:60" x1="0" y1="0" x2="0" y2="54" stroke="url(#goldStroke)" stroke-width="2"/>
+              <path class="draw glow-fade" style="--len:90" d="M0 2 L34 6 L34 26 L0 22 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.6"/>
+              <line x1="6" y1="3" x2="6" y2="22" stroke="var(--steel)" stroke-width="0.8" opacity="0.5"/>
+            </g>
+            <ellipse cx="150" cy="150" rx="14" ry="3" fill="#000" opacity="0.25"/>
+          </svg></div>
+  <div class="phase reveal" style="--d:.2s">Stage 6 &middot; On the Surface</div>
+  <h3 class="reveal" style="--d:.4s">Standing where no one has stood</h3>
+  <p class="moon-side reveal" style="--d:.7s"><span class="lbl">The Mission</span>The triumph is real &mdash; but the surface is hostile, the stay is short, and there&rsquo;s work to do before it&rsquo;s safe to leave. <b>Landing was never the finish line; it was the midpoint.</b></p>
+</div>
+<!--PAGE-->
+<div class="pg stage-b" data-anim>
+  <div class="phase reveal" style="--d:.15s">Stage 6 &middot; On the Surface</div>
+  <h3 class="ghost reveal" style="--d:.3s">Standing where no one has stood</h3>
+  <div class="vrule reveal grow" style="--d:.55s"></div>
+  <p class="you-side reveal" style="--d:.75s"><span class="lbl">Your Climb</span>Achieving the thing is glorious and also not the end. <b>Savour it &mdash; then remember you still have to get home.</b> The launch went well; now the business has to survive. Plant the flag, then get back to work.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-a" data-anim>
+  <div class="stage-art"><svg viewBox="0 0 300 200">
+            <circle class="twinkle-art" cx="50" cy="36" r="1" fill="#fff" opacity="0.6"/>
+            <circle class="twinkle-art" cx="270" cy="50" r="1.1" fill="#fff" opacity="0.6" style="animation-delay:1.6s"/>
+            <!-- surface arc below -->
+            <path class="draw" style="--len:340" d="M0 192 Q150 168 300 192" fill="none" stroke="url(#goldStroke)" stroke-width="1.4" opacity="0.5"/>
+            <!-- orbit arc -->
+            <path class="draw" style="--len:300" d="M40 70 Q150 30 260 70" fill="none" stroke="var(--steel)" stroke-width="1.3" stroke-dasharray="4 5" opacity="0.55"/>
+            <!-- command module waiting in orbit -->
+            <g transform="translate(228 64)">
+              <path class="draw" style="--len:80" d="M-10 6 L0 -8 L10 6 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.6"/>
+              <rect class="draw" style="--len:40" x="-4" y="6" width="8" height="8" fill="none" stroke="url(#goldStroke)" stroke-width="1.4"/>
+            </g>
+            <!-- ascent path -->
+            <path class="draw" style="--len:200" d="M150 174 Q190 130 222 78" fill="none" stroke="url(#goldStroke)" stroke-width="1.6" stroke-dasharray="3 6"/>
+            <!-- ascending craft -->
+            <g transform="translate(150 168) rotate(34)">
+              <path class="draw" style="--len:70" d="M-9 0 L-6 -10 L6 -10 L9 0 L4 8 L-4 8 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.6"/>
+              <path class="art-flame glow-fade" d="M-5 8 Q0 30 5 8 Q2 20 0 26 Q-2 20 -5 8 Z" fill="url(#flameGrad)"/>
+            </g>
+            <!-- rendezvous spark -->
+            <g class="glow-fade" stroke="var(--gold)" stroke-width="1.2" opacity="0.85" transform="translate(224 66)">
+              <line x1="-8" y1="0" x2="-4" y2="0"/><line x1="8" y1="0" x2="4" y2="0"/>
+              <line x1="0" y1="-8" x2="0" y2="-4"/><line x1="0" y1="8" x2="0" y2="4"/>
+            </g>
+          </svg></div>
+  <div class="phase reveal" style="--d:.2s">Stage 7 &middot; Ascent &amp; Rendezvous</div>
+  <h3 class="reveal" style="--d:.4s">Launching with no second chance</h3>
+  <p class="moon-side reveal" style="--d:.7s"><span class="lbl">The Mission</span>To leave, a single small engine had to fire and work &mdash; <b>there was no backup, no rescue.</b> Then the climbing craft had to find and dock with the one waiting in orbit, two specks meeting precisely above an empty world.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-b" data-anim>
+  <div class="phase reveal" style="--d:.15s">Stage 7 &middot; Ascent &amp; Rendezvous</div>
+  <h3 class="ghost reveal" style="--d:.3s">Launching with no second chance</h3>
+  <div class="vrule reveal grow" style="--d:.55s"></div>
+  <p class="you-side reveal" style="--d:.75s"><span class="lbl">Your Climb</span>Getting back out of the hard thing takes its own act of nerve. <b>Sometimes you launch on one engine and faith</b> &mdash; the pivot, the exit, the difficult conversation. And success often means reconnecting with what you left orbiting: people, health, the life on hold.</p>
+</div>
+<!--PAGE-->
+<div class="pg stage-a" data-anim>
+  <div class="stage-art"><svg viewBox="0 0 300 200">
+            <circle class="twinkle-art" cx="40" cy="28" r="1" fill="#fff" opacity="0.5"/>
+            <!-- atmosphere band -->
+            <path class="glow-fade" d="M0 120 Q150 96 300 120 L300 150 Q150 128 0 150 Z" fill="url(#haze)" opacity="0.5"/>
+            <!-- heat trail -->
+            <path class="draw glow-fade" style="--len:240" d="M40 30 Q110 70 158 104" fill="none" stroke="url(#heatGrad)" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+            <path class="draw" style="--len:240" d="M48 28 Q116 66 160 100" fill="none" stroke="var(--cream)" stroke-width="1" stroke-dasharray="2 6" opacity="0.6"/>
+            <!-- capsule (gumdrop) -->
+            <g transform="translate(160 104) rotate(34)">
+              <path class="draw" style="--len:80" d="M-13 -8 L13 -8 L8 8 L-8 8 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.8"/>
+              <path class="art-flame glow-fade" d="M-8 8 Q0 26 8 8 Q4 18 0 22 Q-4 18 -8 8 Z" fill="url(#heatGrad)"/>
+            </g>
+            <!-- parachutes lower -->
+            <g class="glow-fade" transform="translate(210 130)">
+              <path class="draw" style="--len:80" d="M-18 0 A18 18 0 0 1 18 0 Z" fill="none" stroke="url(#goldStroke)" stroke-width="1.4"/>
+              <line x1="-14" y1="2" x2="0" y2="22" stroke="var(--steel)" stroke-width="0.9"/>
+              <line x1="14" y1="2" x2="0" y2="22" stroke="var(--steel)" stroke-width="0.9"/>
+              <line x1="0" y1="0" x2="0" y2="22" stroke="var(--steel)" stroke-width="0.9"/>
+              <path d="M-4 22 L4 22 L3 30 L-3 30 Z" fill="var(--ink)" stroke="url(#goldStroke)" stroke-width="1.2"/>
+            </g>
+            <!-- ocean -->
+            <path class="draw" style="--len:340" d="M0 176 Q40 170 70 176 T140 176 T210 176 T280 176 T300 174 L300 200 L0 200 Z" fill="var(--ink)" stroke="var(--steel)" stroke-width="1.2" opacity="0.7"/>
+            <path d="M0 184 Q40 180 70 184 T140 184 T210 184 T280 184" fill="none" stroke="var(--steel)" stroke-width="0.8" opacity="0.4"/>
+          </svg></div>
+  <div class="phase reveal" style="--d:.2s">Stage 8 &middot; Re-entry &amp; Splashdown</div>
+  <h3 class="reveal" style="--d:.4s">Coming home through fire</h3>
+  <p class="moon-side reveal" style="--d:.7s"><span class="lbl">The Mission</span>Re-entry meant hitting the atmosphere at 25,000 miles per hour, the heat shield glowing near half the temperature of the Sun, a narrow corridor between burning up and skipping back into space &mdash; <b>and minutes of radio silence before anyone knew they&rsquo;d made it.</b></p>
+</div>
+<!--PAGE-->
+<div class="pg stage-b" data-anim>
+  <div class="phase reveal" style="--d:.15s">Stage 8 &middot; Re-entry &amp; Splashdown</div>
+  <h3 class="ghost reveal" style="--d:.3s">Coming home through fire</h3>
+  <div class="vrule reveal grow" style="--d:.55s"></div>
+  <p class="you-side reveal" style="--d:.75s"><span class="lbl">Your Climb</span>Even the return is hard. <b>Coming back down from an all-consuming effort burns</b> &mdash; the comedown, the re-entry into ordinary life, the silence before you know it all worked. Aim for the narrow corridor, trust the shield you built, and ride it through.</p>
+</div>
+<!--PAGE-->
+<div class="pg closing" data-anim>
+  <p class="close-text reveal" style="--d:.3s">No single step on that list was easy. Not one. And yet the whole impossible chain was completed inside a decade &mdash; <span style="color:var(--gold);">because it was broken into stages, and each stage was met in turn.</span> Whatever your Moon is, it decomposes the same way. You don&rsquo;t have to do the impossible. You have to do the next stage.</p>
+</div>
+<!--PAGE-->
+<div class="pg credits" data-anim>
+  <div class="quote-final reveal" style="--d:.25s">“It will bring out the best in us.”</div>
+  <div class="cred-rule reveal grow" style="--d:.6s"></div>
+  <div class="cred-meta reveal" style="--d:.85s">President John F. Kennedy<br>Rice Stadium &middot; September 12, 1962</div>
+</div>
+<!--PAGE-->
+<div class="pg blank"></div></script>
+
+  <!-- book engine -->
+  <script>/* ===== Book engine ===== */
+(function(){
+  'use strict';
+
+  // starfield
+  var sf=document.getElementById('stars');
+  for(var i=0;i<120;i++){
+    var s=document.createElement('span'); s.className='star';
+    var sz=Math.random()*2+0.4;
+    s.style.width=s.style.height=sz+'px';
+    s.style.top=Math.random()*100+'%'; s.style.left=Math.random()*100+'%';
+    s.style.setProperty('--dur',(Math.random()*4+3)+'s');
+    s.style.animationDelay=Math.random()*5+'s';
+    sf.appendChild(s);
+  }
+
+  // parse pages
+  var raw=document.getElementById('pagesrc').innerHTML;
+  var pages=raw.split('<!--PAGE-->').map(function(p){return p.trim();}).filter(Boolean);
+  // group into spreads [left,right]
+  var spreads=[];
+  for(var p=0;p<pages.length;p+=2){ spreads.push([pages[p], pages[p+1]||'<div class="pg blank"></div>']); }
+
+  var book=document.getElementById('book');
+  var hostL=document.getElementById('hostL');
+  var hostR=document.getElementById('hostR');
+  var cur=0;            // current spread index
+  var animating=false;
+
+  // Render a spread WITH entrance animations (used on first load / manual jumps)
+  function renderSpread(idx){
+    hostL.innerHTML=spreads[idx][0];
+    hostR.innerHTML=spreads[idx][1];
+    hostL.classList.remove('settled'); hostR.classList.remove('settled','prelive');
+    book.classList.remove('spread-live');     // reset reveal + art animations
+    void book.offsetWidth;                     // reflow
+    book.classList.add('spread-live');         // trigger draw-ins + reveals
+  }
+
+  // Place a spread WITHOUT re-animating — content is shown final, instantly.
+  // Used after a page-flip so nothing blinks or slides a second time.
+  function settleSpread(idx){
+    hostL.innerHTML=spreads[idx][0];
+    hostR.innerHTML=spreads[idx][1];
+    hostR.classList.remove('prelive');
+    hostL.classList.add('settled'); hostR.classList.add('settled');
+    book.classList.add('spread-live');         // keep art in drawn state
+  }
+
+  // ---- page flip: animate from spread `from` to `to` (to = from+1 forward) ----
+  // We flip the RIGHT page of the current spread leftwards, revealing the next spread.
+  var FLIP_MS=1100;
+  function flipForward(done){
+    if(cur>=spreads.length-1){ if(done) done(); return; }
+    animating=true;
+    var nextIdx=cur+1;
+
+    // build flip leaf: front = current right page, back = next left page
+    var flip=document.createElement('div'); flip.className='flip';
+    var front=document.createElement('div'); front.className='face front';
+    var back=document.createElement('div'); back.className='face back';
+    front.innerHTML='<div class="leaf right" style="width:100%;height:100%;position:absolute;inset:0;"><div class="pg-host">'+spreads[cur][1]+'</div></div>';
+    back.innerHTML='<div class="leaf left" style="width:100%;height:100%;position:absolute;inset:0;"><div class="pg-host">'+spreads[nextIdx][0]+'</div></div>';
+    var shade=document.createElement('div'); shade.className='shade';
+    flip.appendChild(front); flip.appendChild(back); flip.appendChild(shade);
+    book.appendChild(flip);
+
+    // reveal the next spread's RIGHT page beneath the turning leaf, so when the
+    // flip passes 90deg the exposed right side already shows the next content
+    hostR.innerHTML=spreads[nextIdx][1];
+    hostR.classList.add('prelive');   // show its reveal elements immediately (no flash)
+
+    var start=null;
+    function ease(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+    function step(ts){
+      if(start===null) start=ts;
+      var t=Math.min((ts-start)/FLIP_MS,1);
+      var e=ease(t);
+      var ang=-180*e;                       // 0 -> -180deg
+      flip.style.transform='rotateY('+ang+'deg)';
+      // shading: darken as it turns up, lighten as it lays down
+      var sh = Math.sin(e*Math.PI)*0.5;
+      shade.style.background='rgba(0,0,0,'+sh.toFixed(3)+')';
+      if(t<1){ requestAnimationFrame(step); }
+      else{
+        book.removeChild(flip);
+        cur=nextIdx;
+        settleSpread(cur);
+        animating=false;
+        if(done) done();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function stepForward(){ if(!animating) flipForward(); }
+  function jumpTo(idx){ cur=Math.max(0,Math.min(spreads.length-1,idx)); renderSpread(cur); }
+  function prev(){ if(!animating && cur>0){ jumpTo(cur-1); } }
+
+  // ---- auto-advance playback ----
+  var DWELL_MS=4200;     // time a spread rests on screen before flipping
+  var playing=false, playTimer=null;
+  function play(){
+    if(playing) return; playing=true;
+    function cycle(){
+      if(!playing) return;
+      if(cur>=spreads.length-1){ playing=false; return; }
+      flipForward(function(){
+        playTimer=setTimeout(cycle, DWELL_MS);
+      });
+    }
+    playTimer=setTimeout(cycle, DWELL_MS);
+  }
+  function stop(){ playing=false; if(playTimer) clearTimeout(playTimer); }
+
+  // ============ PER-SPREAD VIDEO CAPTURE (.webm) ============
+  // The reliable, good-looking path: record exactly what's painted on screen via
+  // MediaRecorder. For each spread we record: a hold on the spread, then the flip
+  // INTO the next spread, then a short hold. One .webm per spread. Convert to GIF
+  // afterwards if you need GIF (e.g. CapCut, ezgif, ffmpeg). No canvas tainting,
+  // real fonts, real gradients.
+
+  var capturing=false;
+
+  // playback timings used during capture
+  var CAP_HOLD_MS=1600;   // hold on the spread before flipping
+  var CAP_FLIP_MS=1100;   // the page-flip duration (matches FLIP_MS feel)
+  var CAP_TAIL_MS=1400;   // hold on the next spread after the flip lands
+
+  function wait(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+
+  // Run one scripted flip from spreadIndex -> spreadIndex+1 (no-op if last).
+  function scriptedFlip(spreadIndex){
+    return new Promise(function(resolve){
+      if(spreadIndex>=spreads.length-1){ resolve(); return; }
+      var nextIdx=spreadIndex+1;
+      var flip=document.createElement('div'); flip.className='flip';
+      var front=document.createElement('div'); front.className='face front';
+      var back=document.createElement('div'); back.className='face back';
+      front.innerHTML='<div class="leaf right" style="width:100%;height:100%;position:absolute;inset:0;"><div class="pg-host">'+spreads[spreadIndex][1]+'</div></div>';
+      back.innerHTML='<div class="leaf left" style="width:100%;height:100%;position:absolute;inset:0;"><div class="pg-host">'+spreads[nextIdx][0]+'</div></div>';
+      var shade=document.createElement('div'); shade.className='shade';
+      flip.appendChild(front); flip.appendChild(back); flip.appendChild(shade);
+      book.appendChild(flip);
+      hostR.innerHTML=spreads[nextIdx][1];
+      hostR.classList.add('prelive');
+      var start=null;
+      function ease(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+      function step(ts){
+        if(start===null) start=ts;
+        var t=Math.min((ts-start)/CAP_FLIP_MS,1), e=ease(t);
+        flip.style.transform='rotateY('+(-180*e)+'deg)';
+        shade.style.background='rgba(0,0,0,'+(Math.sin(e*Math.PI)*0.5).toFixed(3)+')';
+        if(t<1){ requestAnimationFrame(step); }
+        else{ book.removeChild(flip); cur=nextIdx; settleSpread(cur); resolve(); }
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  function startRecorder(stream){
+    var mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+      ? 'video/webm;codecs=vp9' : 'video/webm';
+    var chunks=[];
+    var rec=new MediaRecorder(stream,{mimeType:mime, videoBitsPerSecond:10000000});
+    rec.ondataavailable=function(e){ if(e.data.size) chunks.push(e.data); };
+    rec._chunks=chunks; rec._mime='video/webm';
+    return rec;
+  }
+  function downloadBlob(blob,name){
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download=name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},3000);
+  }
+
+  // Record a SINGLE spread (current) to .webm: hold -> flip into next -> tail hold.
+  async function captureCurrent(){
+    if(capturing) return; capturing=true; stop();
+    var hint=document.getElementById('hint');
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
+      hint.textContent='Screen capture not available in this browser.'; capturing=false; return;
+    }
+    var stream;
+    try{
+      stream=await navigator.mediaDevices.getDisplayMedia({
+        video:{frameRate:60}, audio:true,
+        preferCurrentTab:true, selfBrowserSurface:'include', surfaceSwitching:'exclude'
+      });
+    }catch(err){ capturing=false; hint.textContent='Capture cancelled.'; return; }
+
+    var rec=startRecorder(stream);
+    var idx=cur;
+    var stopped=new Promise(function(res){
+      rec.onstop=function(){
+        stream.getTracks().forEach(function(t){t.stop();});
+        downloadBlob(new Blob(rec._chunks,{type:rec._mime}), 'moon-book-'+String(idx+1).padStart(2,'0')+'.webm');
+        res();
+      };
+    });
+    stream.getVideoTracks()[0].addEventListener('ended',function(){ if(rec.state!=='inactive') rec.stop(); });
+
+    rec.start();
+    await wait(500);
+    await wait(CAP_HOLD_MS);
+    await scriptedFlip(idx);
+    await wait(CAP_TAIL_MS);
+    if(rec.state!=='inactive') rec.stop();
+    await stopped;
+    capturing=false;
+    hint.textContent='Saved spread '+(idx+1)+'. (Space to play \u00b7 C to capture this spread)';
+  }
+
+  // Record ALL spreads in ONE continuous .webm, flipping through the whole book.
+  // This is usually what you want: one file, full page-turn sequence, then split
+  // or trim later. (One share prompt, one recording.)
+  async function captureAll(){
+    if(capturing) return; capturing=true; stop();
+    var hint=document.getElementById('hint');
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
+      hint.textContent='Screen capture not available in this browser.'; capturing=false; return;
+    }
+    var stream;
+    try{
+      stream=await navigator.mediaDevices.getDisplayMedia({
+        video:{frameRate:60}, audio:true,
+        preferCurrentTab:true, selfBrowserSurface:'include', surfaceSwitching:'exclude'
+      });
+    }catch(err){ capturing=false; hint.textContent='Capture cancelled.'; return; }
+
+    var rec=startRecorder(stream);
+    var stopped=new Promise(function(res){
+      rec.onstop=function(){
+        stream.getTracks().forEach(function(t){t.stop();});
+        downloadBlob(new Blob(rec._chunks,{type:rec._mime}), 'moon-book-full.webm');
+        res();
+      };
+    });
+    var aborted=false;
+    stream.getVideoTracks()[0].addEventListener('ended',function(){ aborted=true; if(rec.state!=='inactive') rec.stop(); });
+
+    jumpTo(0);
+    rec.start();
+    await wait(600);
+    for(var s=0; s<spreads.length && !aborted; s++){
+      hint.textContent='Recording spread '+(s+1)+' / '+spreads.length+' \u2026';
+      await wait(CAP_HOLD_MS);
+      if(s<spreads.length-1){ await scriptedFlip(s); }
+    }
+    await wait(CAP_TAIL_MS);
+    if(rec.state!=='inactive') rec.stop();
+    await stopped;
+    capturing=false;
+    hint.textContent='Saved full book video. (Space play \u00b7 G full video \u00b7 C this spread)';
+    jumpTo(0);
+  }
+
+  // ---- controls ----
+  document.addEventListener('keydown',function(e){
+    if(e.code==='Space'){ e.preventDefault(); playing?stop():play(); }
+    if(e.code==='ArrowRight'){ e.preventDefault(); stop(); stepForward(); }
+    if(e.code==='ArrowLeft'){ e.preventDefault(); stop(); prev(); }
+    if(e.code==='KeyG'){ e.preventDefault(); captureAll(); }      // full book -> one .webm
+    if(e.code==='KeyC'){ e.preventDefault(); captureCurrent(); }  // current spread -> .webm
+    if(e.code==='Escape'){ stop(); }
+  });
+  book.addEventListener('click',function(){ playing?stop():play(); });
+
+  // init
+  renderSpread(0);
+  // gently auto-start playback after fonts settle
+  window.addEventListener('load',function(){ setTimeout(play, 1400); });
+})();
+</script>
+</body>
+</html>
