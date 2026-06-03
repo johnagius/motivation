@@ -11,7 +11,7 @@ can open in any browser and flip through.
 | `index.html` | The **library / landing page** — thumbnails of every book; tap one to open. |
 | `moon-book.html` | **"We Choose to Go to the Moon"** — JFK's Rice University speech, illustrated, with the 8-stage journey to the Moon as a map for doing hard things. |
 | `preview.png` | Link-preview image shown when the library is shared (WhatsApp, etc.). |
-| `media/moonlight-sonata.mp3` | Background music — Beethoven's *Moonlight Sonata* (1st mvt), a public-domain recording (Paul Pitman / [Musopen](https://musopen.org)). |
+| `media/fur-elise.mp3` | Background music — Beethoven's *Für Elise*, a public-domain (CC0) recording via the [Internet Archive](https://archive.org). |
 | `media/narration/*.mp3` | Per-page narration, one file per page, plus `manifest.json`. |
 | `gen_preview.py` | Regenerates `preview.png` (needs Pillow: `pip install Pillow`). |
 | `build_narration.py` | Re-renders the narration audio with Kokoro neural TTS (see below). |
@@ -23,8 +23,8 @@ can open in any browser and flip through.
   **Rotate to landscape** and it becomes the full **two-page animated book** that uses
   the whole screen — a "rotate for the full book" hint shows in portrait, and your place
   is kept when you rotate. On desktop it's the two-page book with page-turn animations.
-- **Public-domain background music.** Beethoven's *Moonlight Sonata* (1st movement),
-  a public-domain recording from Musopen. It fades in and loops gently.
+- **Public-domain background music.** Beethoven's *Für Elise*, a public-domain
+  (CC0) recording. It fades in and loops gently.
 - **Neural narration.** Each page is read aloud by a natural neural voice (rendered
   ahead of time with [Kokoro](https://github.com/thewh1teagle/kokoro-onnx)), so it sounds the same
   on every device. It turns the pages as it reads, and while it speaks the music
@@ -77,7 +77,7 @@ To link straight to a single book instead of the library, share
 
 ## Credits
 
-- **Music:** Beethoven, *Piano Sonata No. 14 "Moonlight"*, 1st movement — performed by
-  Paul Pitman, released to the **public domain** via [Musopen](https://musopen.org).
+- **Music:** Beethoven, *Bagatelle in A minor "Für Elise"* (WoO 59) — a **CC0 /
+  public-domain** recording via the [Internet Archive](https://archive.org/details/BagatellesOp.33AndFurElise).
 - **Narration:** generated with [Kokoro](https://github.com/thewh1teagle/kokoro-onnx)
   neural TTS (Apache-2.0), voice `am_michael`.
