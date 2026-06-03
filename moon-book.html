@@ -1193,6 +1193,10 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   var single=pages.filter(function(p){ return !/class="pg blank"/.test(p); });
   var NPAGES=single.length;
   var MODE='book';
+  // map each FLAT page index (blanks included) -> its narration index (ordinal among
+  // non-blank pages). Narration files are keyed by non-blank ordinal, so book/landscape
+  // mode must translate flat indices or the wrong page is read / pages are skipped.
+  var narrIndex=(function(){ var m=[],n=0; pages.forEach(function(p){ m.push(/class="pg blank"/.test(p)?-1:n++); }); return m; })();
 
   // page persistence across an orientation reload, via #p=<flat page index>
   function hashPage(){ var m=/[#&]p=(\d+)/.exec(location.hash); return m?Math.max(0,Math.min(NPAGES-1,+m[1])):0; }
@@ -1277,9 +1281,11 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     mode:function(){ return MODE; },
     pageCount:function(){ return MODE==='pager'? mPanels.length : NPAGES; },
     onPage:function(fn){ pageCb=fn; },
-    curIndices:function(){                               // flat page indices to narrate for the current view
-      if(MODE==='pager') return [mIdx];
-      var a=[]; if(2*cur<NPAGES) a.push(2*cur); if(2*cur+1<NPAGES) a.push(2*cur+1); return a;
+    curIndices:function(){                               // narration indices for the current view
+      if(MODE==='pager') return [mIdx];                  // pager panels are 1:1 with non-blank pages
+      var a=[]; [2*cur,2*cur+1].forEach(function(fi){     // book spread: two flat pages -> narration ordinals
+        if(fi<narrIndex.length && narrIndex[fi]>=0) a.push(narrIndex[fi]);
+      }); return a;
     },
     atEnd:function(){ return MODE==='pager' ? (mIdx>=mPanels.length-1) : (cur>=spreads.length-1); },
     pauseAuto:function(){ stop(); },
@@ -1378,17 +1384,20 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   <script>
 (function(){
   'use strict';
-  var armed=false;
+  var armed=false, NARR_DELAY=2000;   // music comes on first; narration begins 2s later
   function go(e){
     if(armed) return;
     if(e && e.target && e.target.closest && e.target.closest('#musicBtn,#narrateBtn,#homeBtn,a,button')) return;
     armed=true; off();
-    if(window.__music && !window.__music.isOn()) window.__music.play();
-    if(window.__narration && !window.__narration.isOn()) window.__narration.start();
+    if(window.__music && !window.__music.isOn()) window.__music.play();          // 1) music up at full volume
+    setTimeout(function(){                                                        // 2) after 2s, start narration
+      if(window.__narration && !window.__narration.isOn()) window.__narration.start();   //    (this ducks the music)
+    }, NARR_DELAY);
   }
   function off(){ ['pointerdown','touchstart','keydown','click'].forEach(function(ev){ window.removeEventListener(ev,go,true); }); }
   ['pointerdown','touchstart','keydown','click'].forEach(function(ev){ window.addEventListener(ev,go,true); });
-  window.addEventListener('load',function(){ if(window.__music && !window.__music.isOn()) window.__music.play(); }); // try (often blocked)
+  // best-effort silent-autoplay attempt; if the browser blocks it, the first tap above starts everything
+  window.addEventListener('load',function(){ if(window.__music && !window.__music.isOn()) window.__music.play(); });
 })();
   </script>
 </body>
