@@ -20,7 +20,10 @@ import soundfile as sf
 from kokoro_onnx import Kokoro
 
 HERE   = os.path.dirname(os.path.abspath(__file__))
-OUTDIR = os.path.join(HERE, "media", "narration")
+# Which book + where its narration goes (override for other books, e.g.
+#   BOOK_HTML=arnold-book.html NARR_OUT=media/narration/arnold python3 build_narration.py)
+BOOK   = os.environ.get("BOOK_HTML", "moon-book.html")
+OUTDIR = os.path.join(HERE, os.environ.get("NARR_OUT", "media/narration"))
 FFMPEG = "/usr/local/lib/python3.11/dist-packages/static_ffmpeg/bin/linux/ffmpeg"
 KMODEL = "/tmp/kokoro/kokoro-v1.0.onnx"
 KVOICE = "/tmp/kokoro/voices-v1.0.bin"
@@ -29,7 +32,7 @@ SPEED  = 0.95                                            # slightly measured, li
 os.makedirs(OUTDIR, exist_ok=True)
 
 # ---- pull the page templates out of the book ----
-htmltext = open(os.path.join(HERE, "moon-book.html"), encoding="utf-8").read()
+htmltext = open(os.path.join(HERE, BOOK), encoding="utf-8").read()
 raw = re.search(r'<script id="pagesrc"[^>]*>(.*?)</script>', htmltext, re.S).group(1)
 pages = [p.strip() for p in raw.split("<!--PAGE-->") if p.strip()]
 

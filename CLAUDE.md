@@ -60,13 +60,17 @@ volume; **2 seconds later** narration begins (and ducks the music to a low level
 ## Adding a new book
 
 1. Copy `moon-book.html` → `<slug>-book.html`; replace the `pagesrc` pages and `<title>`.
+   Point `#bgMusic`'s `src` at the new track and set the narration module's
+   `BASE` to `media/narration/<slug>/` so books don't share audio.
 2. Render narration: `pip install kokoro-onnx soundfile static-ffmpeg`, put the Kokoro
    model + voices in `/tmp/kokoro/` (`kokoro-v1.0.onnx`, `voices-v1.0.bin` from the
-   kokoro-onnx `model-files-v1.0` release), then `python3 build_narration.py`
-   (set `KOKORO_VOICE` to pick a voice, e.g. `am_michael`). **Do not** raise Piper's old
-   `--sentence-silence`; Kokoro paces sentences itself via per-sentence rendering.
-3. Add a `.card` link to `index.html` and (optionally) a preview image via
-   `gen_preview.py`.
+   kokoro-onnx `model-files-v1.0` release), then point the build at the new book:
+   `BOOK_HTML=<slug>-book.html NARR_OUT=media/narration/<slug> python3 build_narration.py`
+   (set `KOKORO_VOICE` to pick a voice, e.g. `am_michael`). `build_narration.py` spells
+   out numbers/years, ends section labels with a stop, and reads `cover`-class pages as
+   music-only. **Do not** reintroduce Piper's `--sentence-silence`; Kokoro paces itself.
+3. Add an entry to the `BOOKS` array in `index.html` (href, thumb, source, title, blurb)
+   and a preview image (`gen_preview.py`, or adapt it). Set `og:image` in the book.
 4. Commit, merge to `main`, push.
 
 ## Deploy
