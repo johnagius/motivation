@@ -57,6 +57,24 @@ def num_to_words(n):
         parts.append(_below_thousand(n))
     return ' '.join(parts)
 
+def year_to_words(y):
+    """Speak a year naturally: 1962 -> 'nineteen sixty-two', 2000 -> 'two thousand'."""
+    hi, lo = y // 100, y % 100
+    if 2000 <= y <= 2009:
+        return 'two thousand' + (' ' + _below_thousand(lo) if lo else '')
+    if lo == 0:
+        return _below_thousand(hi) + ' hundred'
+    if lo < 10:
+        return _below_thousand(hi) + ' oh ' + _ONES[lo]
+    return _below_thousand(hi) + ' ' + _below_thousand(lo)
+
+_ORDINALS = {1:'first',2:'second',3:'third',4:'fourth',5:'fifth',6:'sixth',7:'seventh',8:'eighth',
+    9:'ninth',10:'tenth',11:'eleventh',12:'twelfth',13:'thirteenth',14:'fourteenth',15:'fifteenth',
+    16:'sixteenth',17:'seventeenth',18:'eighteenth',19:'nineteenth',20:'twentieth',21:'twenty-first',
+    22:'twenty-second',23:'twenty-third',24:'twenty-fourth',25:'twenty-fifth',26:'twenty-sixth',
+    27:'twenty-seventh',28:'twenty-eighth',29:'twenty-ninth',30:'thirtieth',31:'thirty-first'}
+_MONTHS = ('January|February|March|April|May|June|July|August|September|October|November|December')
+
 def page_text(ph):
     if 'class="pg blank"' in ph:
         return ""
@@ -78,6 +96,10 @@ def page_text(ph):
     ph = ph.replace('&', ' and ')                                                # speak the ampersand
     ph = re.sub(r'\b\d{1,3}(?:,\d{3})+\b',                                       # 240,000 -> words
                 lambda m: num_to_words(int(m.group(0).replace(',', ''))), ph)
+    ph = re.sub(r'\b(' + _MONTHS + r')\s+(\d{1,2})\b',                           # "September 12" -> ordinal day
+                lambda m: m.group(1) + ' ' + _ORDINALS.get(int(m.group(2)), num_to_words(int(m.group(2)))), ph)
+    ph = re.sub(r'\b(1[1-9]\d{2}|20\d{2})\b',                                    # 1962 -> "nineteen sixty-two"
+                lambda m: year_to_words(int(m.group(0))), ph)
     # Speak-friendly punctuation so prosody/pauses land naturally.
     ph = ph.replace('·', '. ').replace('•', '. ')        # middle dots -> stop
     ph = re.sub(r'\s*[—–]\s*', ' — ', ph)                # tidy dashes (espeak handles as pause)
