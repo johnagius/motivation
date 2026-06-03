@@ -245,25 +245,23 @@ blockquote .accent{color:var(--gold);}
   border:1px solid rgba(232,184,95,0.35);border-radius:20px;backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);transition:color .25s,border-color .25s;-webkit-tap-highlight-color:transparent;}
 #homeBtn:hover{color:var(--gold);border-color:var(--gold);}
-body.mobile .page-card .folio{display:none;}
 
-/* ===== mobile reader: single page, finger-swipe (scroll-snap) ===== */
+/* ===== phone portrait: single-page finger-swipe pager ===== */
 #reader{display:none;}
-#mNav,#mSwipe{display:none;}
-body.mobile #book,body.mobile #hint{display:none;}
-body.mobile #reader{position:fixed;inset:0;z-index:2;display:flex;
-  overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;overscroll-behavior:contain;}
-#reader::-webkit-scrollbar{display:none;}
-.panel{flex:0 0 100%;width:100vw;height:100vh;height:100dvh;scroll-snap-align:center;scroll-snap-stop:always;
-  display:flex;align-items:center;justify-content:center;padding:14px;}
-.page-card{position:relative;width:min(92vw,560px);height:min(84vh,820px);height:min(84dvh,820px);
+#mNav,#mSwipe,#rotateHint{display:none;}
+body.pager #book,body.pager #hint{display:none;}
+body.pager #reader{display:block;position:fixed;inset:0;z-index:2;overflow:hidden;touch-action:pan-y;}
+#track{display:flex;height:100%;will-change:transform;}
+#track.anim{transition:transform .34s cubic-bezier(.22,1,.36,1);}
+.panel{flex:0 0 100%;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:14px;}
+.page-card{position:relative;width:min(92vw,560px);height:min(86dvh,820px);height:min(86vh,820px);
   background:linear-gradient(150deg,var(--page),var(--page-edge));border-radius:10px;
   border:1px solid rgba(232,184,95,0.12);overflow:hidden;
   box-shadow:0 24px 60px -20px rgba(0,0,0,0.85), inset 0 0 60px -22px rgba(0,0,0,0.7);}
 .page-card .pg{padding:34px 28px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
 .page-card .folio{left:28px;right:auto;top:24px;}
-/* per-page entrance + line-art draw, triggered when the panel scrolls into view */
+body.pager .page-card .folio{display:none;}
+/* per-page entrance + line-art draw, triggered when a panel becomes current */
 .panel .reveal{opacity:0;transform:translateY(22px);}
 .panel .reveal.grow{transform:scaleX(0);transform-origin:left center;}
 .panel.live .reveal{opacity:1;transform:translateY(0);
@@ -278,18 +276,38 @@ body.mobile #reader{position:fixed;inset:0;z-index:2;display:flex;
 .panel .verse blockquote.reveal{letter-spacing:.04em;}
 .panel.live .verse blockquote.reveal{letter-spacing:0;transition:letter-spacing 1.4s ease var(--d,0s);}
 .panel.live .cover .moon-emblem{animation:floatM 9s ease-in-out infinite 1.4s;}
-/* mobile page counter + swipe hint */
-body.mobile #mNav{display:flex;position:fixed;left:0;right:0;z-index:65;justify-content:center;
+/* page counter + swipe / rotate hints (pager only) */
+body.pager #mNav{display:flex;position:fixed;left:0;right:0;z-index:65;justify-content:center;
   bottom:calc(12px + env(safe-area-inset-bottom));pointer-events:none;}
 #mNav .count{font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;
   color:var(--cream-dim);background:rgba(5,7,15,0.55);padding:6px 14px;border-radius:20px;
   backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
-body.mobile #mSwipe{display:block;position:fixed;left:50%;bottom:calc(50px + env(safe-area-inset-bottom));
+body.pager #mSwipe{display:block;position:fixed;left:50%;bottom:calc(50px + env(safe-area-inset-bottom));
   transform:translateX(-50%);z-index:66;font-family:'Oswald',sans-serif;font-size:.56rem;letter-spacing:.26em;
   text-transform:uppercase;color:var(--gold);opacity:.85;pointer-events:none;transition:opacity .6s ease;
   animation:swipeHint 1.9s ease-in-out infinite;}
 @keyframes swipeHint{0%,100%{transform:translateX(-50%);}50%{transform:translateX(calc(-50% - 9px));}}
 #mSwipe.gone{opacity:0;}
+body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));
+  transform:translateX(-50%);z-index:66;font-family:'Oswald',sans-serif;font-size:.54rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--steel);opacity:.85;pointer-events:none;text-align:center;
+  transition:opacity .6s ease;}
+#rotateHint.gone{opacity:0;}
+/* phone landscape (and desktop) use the two-page book; tune the book for short screens */
+@media (pointer:coarse){ #hint{display:none;} }
+@media (orientation:landscape) and (max-height:560px){
+  #book{height:93vh;width:min(96vw,1000px);}
+  .pg{padding:24px 30px;}
+  blockquote{font-size:clamp(1.05rem,2vw,1.55rem);line-height:1.28;}
+  .refl{font-size:clamp(.78rem,1.5vw,.95rem);line-height:1.5;}
+  .refl.big{font-size:clamp(.92rem,1.7vw,1.1rem);line-height:1.5;}
+  .stage-a .stage-art{max-width:150px;margin-bottom:8px;}
+  .verse-art{max-width:130px;margin-bottom:10px;}
+  .stage-a h3,.stage-b h3{font-size:clamp(1.1rem,2.2vw,1.6rem);margin-bottom:8px;}
+  .stage-a p,.stage-b p,.jintro p{font-size:clamp(.8rem,1.6vw,1rem);line-height:1.45;}
+  .jintro h2{font-size:clamp(1.4rem,3vw,2rem);margin-bottom:12px;}
+  .cover-title{font-size:clamp(2rem,5vw,3rem);}
+}
 </style>
 </head>
 <body>
@@ -336,16 +354,21 @@ body.mobile #mSwipe{display:block;position:fixed;left:50%;bottom:calc(50px + env
   <!-- back to the library -->
   <a id="homeBtn" href="index.html" aria-label="Back to the library">&#8249;&nbsp; Library</a>
 
-  <!-- mobile single-page reader (built by JS) -->
-  <div id="reader" aria-label="Swipe through the book"></div>
+  <!-- phone portrait: finger-swipe pager (track + panels built by JS) -->
+  <div id="reader" aria-label="Swipe through the book"><div id="track"></div></div>
+  <div id="rotateHint">&#8635; Rotate phone for the full two-page book</div>
   <div id="mSwipe">Swipe &rarr;</div>
   <div id="mNav"><span class="count" id="mCount"></span></div>
 
-  <!-- narration (text-to-speech) — off by default; ducks the music while it reads -->
+  <!-- real audio: Clair de Lune (background) + per-page narration -->
+  <audio id="bgMusic" src="media/clair-de-lune.mp3" loop preload="auto"></audio>
+  <audio id="narrAudio" preload="auto"></audio>
+
+  <!-- narration (neural voice) — ducks the music while it reads -->
   <button id="narrateBtn" type="button" aria-label="Read aloud" title="Read aloud (narration)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.6a4 4 0 0 1 0 6.8"/><path d="M18.8 6.2a7.5 7.5 0 0 1 0 11.6"/></svg>
   </button>
-  <!-- background music: classical, off by default (tap to play) -->
+  <!-- background music (Clair de Lune) -->
   <button id="musicBtn" type="button" aria-label="Play background music" title="Background music">&#9835;</button>
 
   <!-- page source -->
@@ -930,6 +953,7 @@ body.mobile #mSwipe{display:block;position:fixed;left:50%;bottom:calc(50px + env
     void book.offsetWidth;                     // reflow
     book.classList.add('spread-live');         // trigger draw-ins + reveals
     firePage(spreadText(idx));
+    if(MODE==='book') setHash(idx*2);
   }
 
   // Place a spread WITHOUT re-animating — content is shown final, instantly.
@@ -941,6 +965,7 @@ body.mobile #mSwipe{display:block;position:fixed;left:50%;bottom:calc(50px + env
     hostL.classList.add('settled'); hostR.classList.add('settled');
     book.classList.add('spread-live');         // keep art in drawn state
     firePage(spreadText(idx));
+    if(MODE==='book') setHash(idx*2);
   }
 
   // ---- page flip: animate from spread `from` to `to` (to = from+1 forward) ----
@@ -1160,258 +1185,210 @@ body.mobile #mSwipe{display:block;position:fixed;left:50%;bottom:calc(50px + env
     if(e.code==='KeyC'){ e.preventDefault(); captureCurrent(); }  // current spread -> .webm
     if(e.code==='Escape'){ stop(); }
   });
-  book.addEventListener('click',function(){ playing?stop():play(); });
+  // ---- environment ----
+  function isPhone(){ return window.matchMedia('(max-width:820px)').matches ||
+                             window.matchMedia('(pointer:coarse) and (max-width:1024px)').matches; }
+  function isPortrait(){ return window.matchMedia('(orientation:portrait)').matches; }
+  var coarse=window.matchMedia('(pointer:coarse)').matches;
+  var single=pages.filter(function(p){ return !/class="pg blank"/.test(p); });
+  var NPAGES=single.length;
+  var MODE='book';
 
-  // ---- mobile single-page reader: one page per screen, finger-swipe ----
-  var mPanels=[], mIdx=0, mReader=null;
-  function buildMobile(){
-    var reader=document.getElementById('reader');
-    var swipe=document.getElementById('mSwipe');
-    var count=document.getElementById('mCount');
-    mReader=reader;
-    var single=pages.filter(function(p){ return !/class="pg blank"/.test(p); });
-    var total=single.length;
-    single.forEach(function(html){
-      var panel=document.createElement('div'); panel.className='panel';
-      panel.innerHTML='<div class="page-card">'+html+'</div>';
-      reader.appendChild(panel);
-    });
-    mPanels=[].slice.call(reader.children);
-    if(mPanels[0]) mPanels[0].classList.add('live');
-    count.textContent='1 / '+total;
-    var io=new IntersectionObserver(function(es){
-      es.forEach(function(en){
-        if(en.isIntersecting && en.intersectionRatio>0.55){
-          en.target.classList.add('live');
-          var idx=mPanels.indexOf(en.target);
-          if(idx>=0){ mIdx=idx; count.textContent=(idx+1)+' / '+total; firePage(elText(en.target)); }
-        }
-      });
-    },{root:reader,threshold:[0.55]});
-    mPanels.forEach(function(p){ io.observe(p); });
-    reader.addEventListener('scroll',function(){ swipe.classList.add('gone'); },{passive:true,once:true});
+  // page persistence across an orientation reload, via #p=<flat page index>
+  function hashPage(){ var m=/[#&]p=(\d+)/.exec(location.hash); return m?Math.max(0,Math.min(NPAGES-1,+m[1])):0; }
+  function setHash(i){ i=Math.max(0,Math.min(NPAGES-1,i)); try{ history.replaceState(null,'','#p='+i); }catch(e){} }
+  function hideHints(){ ['mSwipe','rotateHint'].forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.add('gone'); }); }
+
+  // ============ phone portrait: finger-swipe pager ============
+  var mPanels=[], mIdx=0, track, reader, W=0;
+  function applyX(x,anim){ track.classList.toggle('anim',!!anim); track.style.transform='translate3d('+x+'px,0,0)'; }
+  function setIdx(i,anim){
+    i=Math.max(0,Math.min(mPanels.length-1,i)); mIdx=i; W=reader.clientWidth;
+    applyX(-i*W,anim); mPanels[i].classList.add('live');
+    document.getElementById('mCount').textContent=(i+1)+' / '+mPanels.length;
+    setHash(i); firePage(elText(mPanels[i]));
   }
-
-  // ---- init: pick book (wide screens) or swipe reader (phones) ----
-  var mqMobile=window.matchMedia('(max-width:820px)');
-  var isMobile=mqMobile.matches || window.matchMedia('(pointer:coarse) and (max-width:1024px)').matches;
-  if(isMobile){
-    document.body.classList.add('mobile');
-    buildMobile();
-  }else{
-    renderSpread(0);
-    // gently auto-start the page-turn showcase after fonts settle (visual only)
-    window.addEventListener('load',function(){ setTimeout(play, 1400); });
-  }
-  // rebuild the right layout if the viewport crosses the breakpoint (e.g. rotate)
-  var onModeChange=function(){ if(mqMobile.matches!==document.body.classList.contains('mobile')) location.reload(); };
-  if(mqMobile.addEventListener) mqMobile.addEventListener('change',onModeChange);
-  else if(mqMobile.addListener) mqMobile.addListener(onModeChange);
-
-  // ---- public hooks for narration ----
-  window.MB={
-    isMobile:isMobile,
-    onPage:function(fn){ pageCb=fn; },                 // called with text when the page changes
-    curText:function(){
-      return isMobile ? (mPanels[mIdx]?elText(mPanels[mIdx]):'') : spreadText(cur);
-    },
-    atEnd:function(){ return isMobile ? (mIdx>=mPanels.length-1) : (cur>=spreads.length-1); },
-    pauseAuto:function(){ stop(); },                   // halt the dwell-based showcase
-    next:function(){                                   // advance one page/spread
-      if(isMobile){
-        if(mIdx<mPanels.length-1){ mPanels[mIdx+1].scrollIntoView({behavior:'smooth',inline:'center'}); }
-      }else{
-        if(!animating && cur<spreads.length-1){ stop(); flipForward(); }
+  function buildPager(){
+    MODE='pager'; document.body.classList.add('pager');
+    reader=document.getElementById('reader'); track=document.getElementById('track');
+    single.forEach(function(html){ var p=document.createElement('div'); p.className='panel';
+      p.innerHTML='<div class="page-card">'+html+'</div>'; track.appendChild(p); });
+    mPanels=[].slice.call(track.children); W=reader.clientWidth;
+    var sx=0,sy=0,baseX=0,t0=0,axis=null,dragging=false;
+    reader.addEventListener('touchstart',function(e){
+      if(e.touches.length>1) return; var t=e.touches[0];
+      sx=t.clientX; sy=t.clientY; baseX=-mIdx*W; axis=null; dragging=true; t0=Date.now();
+      track.classList.remove('anim');
+    },{passive:true});
+    reader.addEventListener('touchmove',function(e){
+      if(!dragging) return; var t=e.touches[0], dx=t.clientX-sx, dy=t.clientY-sy;
+      if(axis===null){ if(Math.abs(dx)>8||Math.abs(dy)>8){ axis=Math.abs(dx)>Math.abs(dy)?'x':'y'; if(axis==='y'){ dragging=false; return; } } else return; }
+      if(axis==='x'){ e.preventDefault(); hideHints();
+        var x=baseX+dx, min=-(mPanels.length-1)*W;
+        if(x>0) x*=0.35; else if(x<min) x=min+(x-min)*0.35;   // edge resistance
+        applyX(x,false);
       }
+    },{passive:false});
+    function end(e){
+      if(!dragging){ axis=null; return; } dragging=false;
+      if(axis!=='x'){ axis=null; return; }
+      var dx=(e.changedTouches?e.changedTouches[0].clientX:sx)-sx, dt=Date.now()-t0, v=dx/Math.max(dt,1), target=mIdx;
+      if(dx<-W*0.16 || v<-0.45) target=mIdx+1; else if(dx>W*0.16 || v>0.45) target=mIdx-1;
+      setIdx(target,true); axis=null;
+    }
+    reader.addEventListener('touchend',end);
+    reader.addEventListener('touchcancel',end);
+    window.addEventListener('resize',function(){ if(MODE==='pager'){ W=reader.clientWidth; applyX(-mIdx*W,false); } });
+    setIdx(hashPage(),false);
+    setTimeout(hideHints,6500);
+  }
+
+  // ============ phone landscape: swipe to turn the two-page book ============
+  function bindBookSwipe(){
+    var sx=0,sy=0,axis=null,active=false;
+    book.addEventListener('touchstart',function(e){ if(e.touches.length>1) return; sx=e.touches[0].clientX; sy=e.touches[0].clientY; axis=null; active=true; },{passive:true});
+    book.addEventListener('touchmove',function(e){ if(!active||axis!==null) return; var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
+      if(Math.abs(dx)>10||Math.abs(dy)>10) axis=Math.abs(dx)>Math.abs(dy)?'x':'y'; },{passive:true});
+    book.addEventListener('touchend',function(e){ if(!active){return;} active=false; if(axis!=='x') return;
+      var dx=e.changedTouches[0].clientX-sx; if(dx<-40){ stop(); stepForward(); } else if(dx>40){ stop(); prev(); } });
+  }
+
+  // ---- init: phone-portrait → pager, otherwise (desktop / phone-landscape) → book ----
+  if(isPhone() && isPortrait()){
+    buildPager();
+  }else{
+    MODE='book';
+    renderSpread(Math.floor(hashPage()/2));
+    if(coarse){ bindBookSwipe(); }                       // phone landscape: swipe the book
+    else{                                                // desktop: click-to-play + gentle showcase
+      book.addEventListener('click',function(){ playing?stop():play(); });
+      window.addEventListener('load',function(){ setTimeout(play, 1400); });
+    }
+  }
+  // reload into the right layout when the phone is rotated across the portrait/landscape line
+  var wantPager=isPhone()&&isPortrait();
+  function checkMode(){ if((isPhone()&&isPortrait())!==wantPager) location.reload(); }
+  ['(orientation:portrait)','(max-width:820px)'].forEach(function(q){
+    var m=window.matchMedia(q); if(m.addEventListener) m.addEventListener('change',checkMode); else if(m.addListener) m.addListener(checkMode);
+  });
+
+  // ---- public API for the narration module ----
+  window.MB={
+    mode:function(){ return MODE; },
+    pageCount:function(){ return MODE==='pager'? mPanels.length : NPAGES; },
+    onPage:function(fn){ pageCb=fn; },
+    curIndices:function(){                               // flat page indices to narrate for the current view
+      if(MODE==='pager') return [mIdx];
+      var a=[]; if(2*cur<NPAGES) a.push(2*cur); if(2*cur+1<NPAGES) a.push(2*cur+1); return a;
+    },
+    atEnd:function(){ return MODE==='pager' ? (mIdx>=mPanels.length-1) : (cur>=spreads.length-1); },
+    pauseAuto:function(){ stop(); },
+    next:function(){
+      if(MODE==='pager'){ if(mIdx<mPanels.length-1) setIdx(mIdx+1,true); }
+      else if(!animating && cur<spreads.length-1){ stop(); flipForward(); }
     }
   };
 })();
 </script>
 
-  <!-- background music: Beethoven's "Für Elise", synthesised in-browser (no files, no autoplay) -->
+  <!-- background music: Clair de Lune (real recording), with smooth fade + ducking -->
   <script>
 (function(){
   'use strict';
   var btn=document.getElementById('musicBtn');
-  if(!btn) return;
-  var actx=null, master=null, bus=null, loopTimer=null, on=false, ducked=false;
-  var NORMAL=0.5, DUCK=0.14;   // background level, and lowered level while narrating
-
-  var STEP={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
-  function freq(n){
-    var m=/^([A-G])(#?)(-?\d)$/.exec(n);
-    var midi=STEP[m[1]]+(m[2]?1:0)+(parseInt(m[3],10)+1)*12;
-    return 440*Math.pow(2,(midi-69)/12);
+  var au=document.getElementById('bgMusic');
+  if(!btn||!au) return;
+  var NORMAL=0.55, DUCK=0.16, on=false, ducked=false, fadeT=null;
+  au.volume=0;
+  function clearFade(){ if(fadeT){ clearInterval(fadeT); fadeT=null; } }
+  function fadeTo(target,ms){
+    clearFade(); var from=au.volume, steps=Math.max(1,Math.round(ms/40)), i=0;
+    fadeT=setInterval(function(){ i++; au.volume=Math.max(0,Math.min(1, from+(target-from)*i/steps));
+      if(i>=steps){ clearFade(); if(target<=0 && au._stopAtZero){ try{au.pause();}catch(e){} au._stopAtZero=false; } } },40);
   }
-
-  // melody / bass as [note, length-in-eighths]; loop totals 49 eighths each
-  var melody=[
-    ['E5',1],['D#5',1],['E5',1],['D#5',1],['E5',1],['B4',1],['D5',1],['C5',1],['A4',2],
-    ['rest',1],['C4',1],['E4',1],['A4',1],['B4',2],
-    ['rest',1],['E4',1],['G#4',1],['B4',1],['C5',2],
-    ['rest',1],['E4',1],['E5',1],['D#5',1],
-    ['E5',1],['D#5',1],['E5',1],['B4',1],['D5',1],['C5',1],['A4',2],
-    ['rest',1],['C4',1],['E4',1],['A4',1],['B4',2],
-    ['rest',1],['E4',1],['C5',1],['B4',1],['A4',3],
-    ['rest',2]
-  ];
-  var bass=[
-    ['rest',10],
-    ['A2',2],['E3',2],['A3',2],
-    ['E2',2],['E3',2],['G#3',2],
-    ['A2',2],['E3',2],
-    ['rest',8],
-    ['A2',2],['E3',2],['A3',2],
-    ['A2',2],['E3',2],['A3',3],
-    ['rest',2]
-  ];
-  var UNIT=0.19, LOOP=49*UNIT;
-
-  function tone(f,t0,dur,peak,type){
-    var o=actx.createOscillator(); o.type=type||'triangle'; o.frequency.value=f;
-    var g=actx.createGain();
-    g.gain.setValueAtTime(0.0001,t0);
-    g.gain.linearRampToValueAtTime(peak,t0+0.012);
-    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
-    o.connect(g); g.connect(bus);
-    o.start(t0); o.stop(t0+dur+0.05);
+  function play(){
+    on=true; au._stopAtZero=false; btn.classList.add('on'); btn.setAttribute('aria-label','Pause background music');
+    var p=au.play();
+    if(p&&p.catch) p.catch(function(){ on=false; btn.classList.remove('on'); });   // autoplay blocked: waits for a tap
+    fadeTo(ducked?DUCK:NORMAL,1200);
   }
-  function scheduleLoop(t0){
-    var t=t0,i;
-    for(i=0;i<melody.length;i++){
-      var d=melody[i][1]*UNIT;
-      if(melody[i][0]!=='rest') tone(freq(melody[i][0]),t,Math.min(d*1.8,1.1),0.20,'triangle');
-      t+=d;
-    }
-    var tb=t0;
-    for(i=0;i<bass.length;i++){
-      var db=bass[i][1]*UNIT;
-      if(bass[i][0]!=='rest') tone(freq(bass[i][0]),tb,Math.min(db*1.5,1.3),0.095,'sine');
-      tb+=db;
-    }
-  }
-  function runLoop(){ if(!on) return; scheduleLoop(actx.currentTime+0.06); loopTimer=setTimeout(runLoop, LOOP*1000-40); }
-
-  function start(){
-    if(!actx){
-      var AC=window.AudioContext||window.webkitAudioContext;
-      if(!AC){ return; }
-      actx=new AC();
-      master=actx.createGain(); master.gain.value=0.0001;
-      var lp=actx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3600; lp.Q.value=0.4;
-      bus=actx.createGain(); bus.gain.value=0.9;
-      var dl=actx.createDelay(); dl.delayTime.value=0.22;          // soft, moonlit ambience
-      var fb=actx.createGain(); fb.gain.value=0.22;
-      var wet=actx.createGain(); wet.gain.value=0.16;
-      bus.connect(lp); lp.connect(master);
-      bus.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(master);
-      master.connect(actx.destination);
-    }
-    if(actx.state==='suspended') actx.resume();
-    master.gain.cancelScheduledValues(actx.currentTime);
-    master.gain.setValueAtTime(Math.max(master.gain.value,0.0001),actx.currentTime);
-    master.gain.linearRampToValueAtTime(ducked?DUCK:NORMAL,actx.currentTime+1.2);
-    on=true; btn.classList.add('on'); btn.setAttribute('aria-label','Pause background music');
-    runLoop();
-  }
-  function rampTo(v,sec){
-    if(!master) return;
-    master.gain.cancelScheduledValues(actx.currentTime);
-    master.gain.setValueAtTime(Math.max(master.gain.value,0.0001),actx.currentTime);
-    master.gain.linearRampToValueAtTime(Math.max(v,0.0001),actx.currentTime+sec);
-  }
-  function stopMusic(){
+  function pause(){
     on=false; btn.classList.remove('on'); btn.setAttribute('aria-label','Play background music');
-    if(loopTimer) clearTimeout(loopTimer);
-    if(master){
-      master.gain.cancelScheduledValues(actx.currentTime);
-      master.gain.setValueAtTime(master.gain.value,actx.currentTime);
-      master.gain.linearRampToValueAtTime(0.0001,actx.currentTime+0.5);
-    }
+    au._stopAtZero=true; fadeTo(0,500);
   }
-  btn.addEventListener('click',function(e){ e.stopPropagation(); on?stopMusic():start(); });
-
-  // exposed so narration can duck the music while it reads
+  btn.addEventListener('click',function(e){ e.stopPropagation(); on?pause():play(); });
   window.__music={
-    isOn:function(){ return on; },
-    duck:function(){ ducked=true; if(on) rampTo(DUCK,0.25); },
-    unduck:function(){ ducked=false; if(on) rampTo(NORMAL,0.6); }
+    isOn:function(){ return on; }, play:play, pause:pause,
+    duck:function(){ ducked=true; if(on) fadeTo(DUCK,250); },
+    unduck:function(){ ducked=false; if(on) fadeTo(NORMAL,650); }
   };
 })();
   </script>
 
-  <!-- narration: reads the current page aloud (Web Speech API); ducks the music -->
+  <!-- narration: per-page neural-voice audio (Piper); ducks the music while it reads -->
   <script>
 (function(){
   'use strict';
   var btn=document.getElementById('narrateBtn');
-  var synth=window.speechSynthesis;
-  if(!btn) return;
-  if(!synth || typeof SpeechSynthesisUtterance==='undefined'){ btn.style.display='none'; return; }
+  var au=document.getElementById('narrAudio');
+  if(!btn||!au) return;
+  var BASE='media/narration/', on=false, ready=false, files={}, queue=[], qi=0, seq=0;
+  au.volume=1.0;
+  fetch(BASE+'manifest.json').then(function(r){return r.json();}).then(function(m){ files=m.files||{}; ready=true; })
+    .catch(function(){ btn.style.display='none'; });
 
-  var narrateOn=false, voice=null, seq=0;
-
-  function pickVoice(){
-    var vs=synth.getVoices()||[];
-    voice = vs.filter(function(v){return /en[-_]GB/i.test(v.lang);})
-             .sort(function(a,b){return /female|libby|sonia|hazel|serena|google/i.test(b.name)-/female|libby|sonia|hazel|serena|google/i.test(a.name);})[0]
-         || vs.filter(function(v){return /Google US English/i.test(v.name);})[0]
-         || vs.filter(function(v){return /en[-_]/i.test(v.lang);})[0]
-         || vs[0] || null;
-  }
-  pickVoice();
-  if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=pickVoice;
-
+  function pad(n){ return (n<10?'0':'')+n+'.mp3'; }
   function duck(){ if(window.__music) window.__music.duck(); }
   function unduck(){ if(window.__music) window.__music.unduck(); }
 
-  // split into short, sentence-sized chunks (avoids the long-utterance cutoff bug)
-  function chunk(text){
-    var parts=(text.match(/[^.!?]+[.!?]*[\s]*/g)||[text]), out=[], buf='';
-    parts.forEach(function(p){
-      if((buf+p).length>210){ if(buf) out.push(buf.trim()); buf=p; }
-      else buf+=p;
-    });
-    if(buf.trim()) out.push(buf.trim());
-    return out.length?out:[text];
-  }
-
-  function speakText(text){
-    seq++; var mySeq=seq;
-    try{ synth.cancel(); }catch(e){}
-    if(!text){ return; }
-    var chunks=chunk(text), i=0;
+  function playCurrent(){
+    if(!on) return;
+    seq++; var my=seq;
+    queue=(window.MB.curIndices()||[]).filter(function(i){ return files[String(i)]; }); qi=0;
+    if(!queue.length){ advance(my); return; }
     btn.classList.add('speaking'); duck();
-    function done(){
-      btn.classList.remove('speaking'); unduck();
-      if(mySeq===seq && narrateOn && !window.MB.atEnd()){ window.MB.next(); }  // auto-advance
-    }
-    function speakNext(){
-      if(mySeq!==seq) return;                 // superseded by a newer page
-      if(i>=chunks.length){ done(); return; }
-      var u=new SpeechSynthesisUtterance(chunks[i++]);
-      u.volume=0.8; u.rate=0.95; u.pitch=1.0;
-      if(voice){ u.voice=voice; u.lang=voice.lang; } else { u.lang='en-GB'; }
-      u.onend=function(){ if(mySeq===seq) speakNext(); };
-      u.onerror=function(){ if(mySeq===seq) speakNext(); };
-      synth.speak(u);
-    }
-    speakNext();
+    playNext(my);
+  }
+  function playNext(my){
+    if(my!==seq||!on) return;
+    if(qi>=queue.length){ btn.classList.remove('speaking'); advance(my); return; }
+    au.onended=function(){ playNext(my); };
+    au.src=BASE+pad(queue[qi++]); au.currentTime=0;
+    var p=au.play(); if(p&&p.catch) p.catch(function(){});
+  }
+  function advance(my){
+    if(my!==seq||!on) return;
+    if(!window.MB.atEnd()) window.MB.next();   // -> onPage -> playCurrent for the next view
+    else stop();
   }
 
-  // follow the book: whenever the page changes, read it (if narration is on)
-  if(window.MB) window.MB.onPage(function(text){ if(narrateOn) speakText(text); });
+  function kick(){ if(!on) return; if(!ready){ setTimeout(kick,150); return; } playCurrent(); }
+  function start(){ if(on) return; on=true; btn.classList.add('on'); btn.setAttribute('aria-label','Stop narration');
+    if(window.MB) window.MB.pauseAuto(); kick(); }
+  function stop(){ on=false; seq++; btn.classList.remove('on','speaking'); try{au.pause();}catch(e){} unduck();
+    btn.setAttribute('aria-label','Read aloud'); }
 
-  function startNarration(){
-    narrateOn=true; btn.classList.add('on'); btn.setAttribute('aria-label','Stop narration');
-    if(window.MB){ window.MB.pauseAuto(); speakText(window.MB.curText()); }
+  if(window.MB) window.MB.onPage(function(){ if(on) playCurrent(); });
+  btn.addEventListener('click',function(e){ e.stopPropagation(); on?stop():start(); });
+  window.__narration={ isOn:function(){ return on; }, start:start, stop:stop };
+})();
+  </script>
+
+  <!-- auto-start music + narration on the first interaction (browsers block silent autoplay) -->
+  <script>
+(function(){
+  'use strict';
+  var armed=false;
+  function go(e){
+    if(armed) return;
+    if(e && e.target && e.target.closest && e.target.closest('#musicBtn,#narrateBtn,#homeBtn,a,button')) return;
+    armed=true; off();
+    if(window.__music && !window.__music.isOn()) window.__music.play();
+    if(window.__narration && !window.__narration.isOn()) window.__narration.start();
   }
-  function stopNarration(){
-    narrateOn=false; seq++; btn.classList.remove('on','speaking');
-    btn.setAttribute('aria-label','Read aloud'); try{ synth.cancel(); }catch(e){} unduck();
-  }
-  btn.addEventListener('click',function(e){ e.stopPropagation(); narrateOn?stopNarration():startNarration(); });
-  window.addEventListener('beforeunload',function(){ try{ synth.cancel(); }catch(e){} });
+  function off(){ ['pointerdown','touchstart','keydown','click'].forEach(function(ev){ window.removeEventListener(ev,go,true); }); }
+  ['pointerdown','touchstart','keydown','click'].forEach(function(ev){ window.addEventListener(ev,go,true); });
+  window.addEventListener('load',function(){ if(window.__music && !window.__music.isOn()) window.__music.play(); }); // try (often blocked)
 })();
   </script>
 </body>

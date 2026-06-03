@@ -11,26 +11,47 @@ can open in any browser and flip through.
 | `index.html` | The **library / landing page** — thumbnails of every book; tap one to open. |
 | `moon-book.html` | **"We Choose to Go to the Moon"** — JFK's Rice University speech, illustrated, with the 8-stage journey to the Moon as a map for doing hard things. |
 | `preview.png` | Link-preview image shown when the library is shared (WhatsApp, etc.). |
+| `media/clair-de-lune.mp3` | Background music — Debussy's *Clair de Lune* (public-domain recording). |
+| `media/narration/*.mp3` | Per-page narration, one file per page, plus `manifest.json`. |
 | `gen_preview.py` | Regenerates `preview.png` (needs Pillow: `pip install Pillow`). |
+| `build_narration.py` | Re-renders the narration audio with Piper neural TTS (see below). |
 
 ## Features
 
-- **Mobile-first reading.** On phones each page fills the screen and you turn pages
-  with a natural finger **swipe** (one page at a time, with a page counter). On wide
-  screens it becomes a two-page animated book with page-turn animations.
-- **Background music.** Beethoven's *Für Elise*, synthesised in the browser — no audio
-  files, nothing to download. It's **off by default** (no autoplay); tap the ♪ button
-  to start it.
-- **Automatic narration.** Tap the speaker button and the book reads itself aloud,
-  turning pages as it goes. While narration plays, the music automatically **ducks**
-  (drops to a low background level) and the voice sits at ~80% volume.
+- **Mobile-first reading with real swipe.** In **portrait**, each page fills the screen
+  and you turn pages with a real finger **swipe** (drag-to-turn, snaps, page counter).
+  **Rotate to landscape** and it becomes the full **two-page animated book** that uses
+  the whole screen — a "rotate for the full book" hint shows in portrait, and your place
+  is kept when you rotate. On desktop it's the two-page book with page-turn animations.
+- **Real background music.** Debussy's *Clair de Lune* (an actual recording, not
+  synthesised). It fades in and loops gently.
+- **Neural narration.** Each page is read aloud by a natural neural voice (rendered
+  ahead of time with [Piper](https://github.com/rhasspy/piper)), so it sounds the same
+  on every device. It turns the pages as it reads, and while it speaks the music
+  automatically **ducks** to a low level.
+- **Auto-start.** Browsers block audio until the reader interacts, so the music and
+  narration start automatically on the **first tap/swipe**. The ♪ and 🔊 buttons toggle
+  each on/off.
 - **Back to the library.** Every book has a "‹ Library" link to return to `index.html`.
 
 ### Controls
 
-- **Phone:** swipe to turn pages · ♪ music · 🔊 narration · ‹ Library to go back.
+- **Phone:** swipe to turn pages (portrait) · rotate for the two-page book · ♪ music ·
+  🔊 narration · ‹ Library to go back.
 - **Desktop:** `Space`/click play the showcase · `→` `←` step · ♪ music · 🔊 narration ·
   `G` record the whole book to video · `C` record the current spread.
+
+## Re-rendering the narration
+
+The narration MP3s are committed, so you don't need to rebuild them. To regenerate
+(e.g. after editing the book text or to change the voice):
+
+```bash
+pip install piper-tts static-ffmpeg
+# download a Piper voice to /tmp/piper/ryan.onnx (+ .onnx.json) from
+# https://huggingface.co/rhasspy/piper-voices  (this uses en_US-ryan-high)
+python3 build_narration.py
+```
 
 ## Share it on WhatsApp (one-click link)
 
