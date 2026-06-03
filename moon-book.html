@@ -223,7 +223,7 @@ blockquote .accent{color:var(--gold);}
   color:var(--cream-dim);opacity:.5;text-align:center;line-height:1.8;}
 
 /* ===== music toggle (no autoplay — tap to start) ===== */
-#musicBtn,#narrateBtn{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));z-index:70;
+#musicBtn,#narrateBtn,#restartBtn{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));z-index:70;
   width:48px;height:48px;border-radius:50%;border:1px solid rgba(232,184,95,0.5);
   background:rgba(10,14,28,0.66);color:var(--gold);font-size:1.15rem;line-height:1;cursor:pointer;
   display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);
@@ -231,12 +231,31 @@ blockquote .accent{color:var(--gold);}
   transition:transform .2s ease, color .3s ease, box-shadow .3s ease;-webkit-tap-highlight-color:transparent;}
 #musicBtn{right:16px;}
 #narrateBtn{right:74px;}
-#musicBtn svg,#narrateBtn svg{width:22px;height:22px;}
-#musicBtn:hover,#narrateBtn:hover{transform:scale(1.06);}
-#musicBtn:active,#narrateBtn:active{transform:scale(.94);}
+#restartBtn{right:132px;}
+#musicBtn svg,#narrateBtn svg,#restartBtn svg{width:22px;height:22px;}
+#musicBtn:hover,#narrateBtn:hover,#restartBtn:hover{transform:scale(1.06);}
+#musicBtn:active,#narrateBtn:active,#restartBtn:active{transform:scale(.94);}
+#restartBtn.spin svg{animation:roSpin .6s ease;}
+@keyframes roSpin{from{transform:rotate(0);}to{transform:rotate(-360deg);}}
 #musicBtn.on,#narrateBtn.on{color:#fff8e6;border-color:var(--gold);animation:musPulse 2.6s ease-in-out infinite;}
 @keyframes musPulse{0%,100%{box-shadow:0 0 12px 1px var(--glow);}50%{box-shadow:0 0 24px 5px var(--glow);}}
 #narrateBtn.speaking{color:#fff;border-color:#fff;}
+
+/* ===== one-time "tap anywhere to begin" overlay ===== */
+#startOverlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:22px;cursor:pointer;text-align:center;padding:24px;
+  background:radial-gradient(circle at 50% 38%,rgba(12,16,34,0.72),rgba(3,5,12,0.95));
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  transition:opacity .6s ease;-webkit-tap-highlight-color:transparent;}
+#startOverlay.gone{opacity:0;pointer-events:none;}
+#startOverlay .so-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-style:italic;
+  font-size:clamp(1.7rem,5.5vw,2.6rem);line-height:1.15;color:var(--cream);}
+#startOverlay .so-cta{font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.26em;text-transform:uppercase;
+  font-size:.82rem;color:var(--gold);border:1px solid rgba(232,184,95,0.55);border-radius:30px;
+  padding:13px 28px;display:inline-flex;align-items:center;gap:11px;animation:soPulse 2.4s ease-in-out infinite;}
+#startOverlay .so-sub{font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.12em;
+  font-size:.74rem;color:var(--cream-dim);max-width:30ch;line-height:1.7;}
+@keyframes soPulse{0%,100%{opacity:.7;}50%{opacity:1;}}
 
 /* back-to-library link */
 #homeBtn{position:fixed;left:16px;top:calc(14px + env(safe-area-inset-top));z-index:70;
@@ -351,7 +370,14 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   </div>
   <div id="hint">Space / click — play · &rarr; &larr; — step · &#9835; — music · &#9836; — narrate · G — record full book · C — record this spread</div>
 
-  <!-- back to the library -->
+  <!-- one-time "tap anywhere to begin" overlay (a real tap is required to unlock audio) -->
+  <div id="startOverlay" role="button" tabindex="0" aria-label="Tap anywhere to begin">
+    <div class="so-title">We Choose to Go to the Moon</div>
+    <div class="so-cta">Tap anywhere to begin &#9654;</div>
+    <div class="so-sub">Music begins, then the page is read aloud. Swipe or use the arrows to turn the pages.</div>
+  </div>
+
+  <!-- back to the library (main page) -->
   <a id="homeBtn" href="index.html" aria-label="Back to the library">&#8249;&nbsp; Library</a>
 
   <!-- phone portrait: finger-swipe pager (track + panels built by JS) -->
@@ -361,7 +387,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   <div id="mNav"><span class="count" id="mCount"></span></div>
 
   <!-- real audio: Clair de Lune (background) + per-page narration -->
-  <audio id="bgMusic" src="media/clair-de-lune.mp3" loop preload="auto"></audio>
+  <audio id="bgMusic" src="media/clair-de-lune.mp3?v=2" loop preload="auto"></audio>
   <audio id="narrAudio" preload="auto"></audio>
 
   <!-- narration (neural voice) — ducks the music while it reads -->
@@ -370,6 +396,10 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   </button>
   <!-- background music (Clair de Lune) -->
   <button id="musicBtn" type="button" aria-label="Play background music" title="Background music">&#9835;</button>
+  <!-- start over: back to the first page and read from the top -->
+  <button id="restartBtn" type="button" aria-label="Start over from the beginning" title="Start over">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/></svg>
+  </button>
 
   <!-- page source -->
   <script id="pagesrc" type="text/template"><!--PAGE-->
@@ -1264,9 +1294,9 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     MODE='book';
     renderSpread(Math.floor(hashPage()/2));
     if(coarse){ bindBookSwipe(); }                       // phone landscape: swipe the book
-    else{                                                // desktop: click-to-play + gentle showcase
-      book.addEventListener('click',function(){ playing?stop():play(); });
-      window.addEventListener('load',function(){ setTimeout(play, 1400); });
+    else{                                                // desktop: click toggles the showcase auto-advance
+      book.addEventListener('click',function(){ if(window.__narration && window.__narration.isOn()) return; playing?stop():play(); });
+      // no auto-advance on load: the "tap to begin" overlay drives the start so narration begins on page 1
     }
   }
   // reload into the right layout when the phone is rotated across the portrait/landscape line
@@ -1289,6 +1319,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     },
     atEnd:function(){ return MODE==='pager' ? (mIdx>=mPanels.length-1) : (cur>=spreads.length-1); },
     pauseAuto:function(){ stop(); },
+    goStart:function(){ stop(); if(MODE==='pager') setIdx(0,true); else jumpTo(0); },  // back to first page
     next:function(){
       if(MODE==='pager'){ if(mIdx<mPanels.length-1) setIdx(mIdx+1,true); }
       else if(!animating && cur<spreads.length-1){ stop(); flipForward(); }
@@ -1338,12 +1369,12 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   var btn=document.getElementById('narrateBtn');
   var au=document.getElementById('narrAudio');
   if(!btn||!au) return;
-  var BASE='media/narration/', on=false, ready=false, files={}, queue=[], qi=0, seq=0;
+  var BASE='media/narration/', VER='?v=2', on=false, ready=false, files={}, queue=[], qi=0, seq=0;
   au.volume=1.0;
-  fetch(BASE+'manifest.json').then(function(r){return r.json();}).then(function(m){ files=m.files||{}; ready=true; })
+  fetch(BASE+'manifest.json'+VER).then(function(r){return r.json();}).then(function(m){ files=m.files||{}; ready=true; })
     .catch(function(){ btn.style.display='none'; });
 
-  function pad(n){ return (n<10?'0':'')+n+'.mp3'; }
+  function pad(n){ return (n<10?'0':'')+n+'.mp3'+VER; }
   function duck(){ if(window.__music) window.__music.duck(); }
   function unduck(){ if(window.__music) window.__music.unduck(); }
 
@@ -1380,24 +1411,46 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
 })();
   </script>
 
-  <!-- auto-start music + narration on the first interaction (browsers block silent autoplay) -->
+  <!-- "tap anywhere to begin" overlay + start-over button.
+       Browsers block silent autoplay, so the overlay tap is what unlocks audio:
+       music starts first, then narration 2 seconds later. -->
   <script>
 (function(){
   'use strict';
-  var armed=false, NARR_DELAY=2000;   // music comes on first; narration begins 2s later
-  function go(e){
-    if(armed) return;
-    if(e && e.target && e.target.closest && e.target.closest('#musicBtn,#narrateBtn,#homeBtn,a,button')) return;
-    armed=true; off();
-    if(window.__music && !window.__music.isOn()) window.__music.play();          // 1) music up at full volume
-    setTimeout(function(){                                                        // 2) after 2s, start narration
-      if(window.__narration && !window.__narration.isOn()) window.__narration.start();   //    (this ducks the music)
+  var NARR_DELAY=2000, started=false;            // music first; narration begins 2s later
+  var overlay=document.getElementById('startOverlay');
+
+  function begin(fromTop){                         // start music, then narration after 2s
+    if(window.__music && !window.__music.isOn()) window.__music.play();
+    setTimeout(function(){
+      if(window.__narration && !window.__narration.isOn()) window.__narration.start();
     }, NARR_DELAY);
   }
-  function off(){ ['pointerdown','touchstart','keydown','click'].forEach(function(ev){ window.removeEventListener(ev,go,true); }); }
-  ['pointerdown','touchstart','keydown','click'].forEach(function(ev){ window.addEventListener(ev,go,true); });
-  // best-effort silent-autoplay attempt; if the browser blocks it, the first tap above starts everything
-  window.addEventListener('load',function(){ if(window.__music && !window.__music.isOn()) window.__music.play(); });
+  function dismissOverlay(){
+    if(started) return; started=true;
+    if(overlay){ overlay.classList.add('gone'); setTimeout(function(){ if(overlay&&overlay.parentNode) overlay.parentNode.removeChild(overlay); },700); }
+    begin();
+  }
+  if(overlay){
+    ['click','touchstart','keydown'].forEach(function(ev){ overlay.addEventListener(ev,function(e){ e.preventDefault(); dismissOverlay(); },{passive:false}); });
+  }else{ dismissOverlay(); }
+  // fallback: if the overlay is somehow bypassed, the first page interaction still starts audio
+  function fallback(e){
+    if(started) return;
+    if(e && e.target && e.target.closest && e.target.closest('#musicBtn,#narrateBtn,#restartBtn,#homeBtn,a,button')) return;
+    dismissOverlay();
+  }
+  ['pointerdown','keydown'].forEach(function(ev){ window.addEventListener(ev,fallback,true); });
+
+  // ---- start over: back to page 1, music keeps playing, read again from the top ----
+  var rb=document.getElementById('restartBtn');
+  if(rb) rb.addEventListener('click',function(e){
+    e.stopPropagation();
+    rb.classList.remove('spin'); void rb.offsetWidth; rb.classList.add('spin');
+    if(window.MB) window.MB.goStart();                                   // jump to first page
+    if(window.__music && !window.__music.isOn()) window.__music.play();  // ensure music is on
+    if(window.__narration){ window.__narration.stop(); window.__narration.start(); }   // read from the top
+  });
 })();
   </script>
 </body>
