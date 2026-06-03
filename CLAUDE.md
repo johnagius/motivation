@@ -21,7 +21,7 @@ each book is a standalone `*-book.html`.
 |------|------------|
 | `index.html` | Library landing page — a grid of `.card` links, one per book. |
 | `moon-book.html` | Reference book (JFK "We Choose to Go to the Moon"). Copy it to start a new book. |
-| `media/moonlight-sonata.mp3` | Background music — Beethoven *Moonlight Sonata* mvt.1, a **public-domain recording** (Paul Pitman / Musopen, PD). |
+| `media/fur-elise.mp3` | Background music — Beethoven *Für Elise*, a **public-domain (CC0) recording** (via Internet Archive). |
 | `media/narration/NN.mp3` + `manifest.json` | Per-page narration for a book. |
 | `build_narration.py` | Renders narration with **Kokoro** neural TTS (natural prosody; replaced the robotic Piper voice). |
 | `gen_preview.py` | Renders `preview.png` (1200×630 social card) with Pillow. |
