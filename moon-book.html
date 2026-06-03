@@ -386,15 +386,15 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   <div id="mSwipe">Swipe &rarr;</div>
   <div id="mNav"><span class="count" id="mCount"></span></div>
 
-  <!-- real audio: Clair de Lune (background) + per-page narration -->
-  <audio id="bgMusic" src="media/clair-de-lune.mp3?v=2" loop preload="auto"></audio>
+  <!-- real audio: Für Elise backing (generated, public-domain) + per-page narration -->
+  <audio id="bgMusic" src="media/fur-elise.mp3?v=1" loop preload="auto"></audio>
   <audio id="narrAudio" preload="auto"></audio>
 
   <!-- narration (neural voice) — ducks the music while it reads -->
   <button id="narrateBtn" type="button" aria-label="Read aloud" title="Read aloud (narration)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.6a4 4 0 0 1 0 6.8"/><path d="M18.8 6.2a7.5 7.5 0 0 1 0 11.6"/></svg>
   </button>
-  <!-- background music (Clair de Lune) -->
+  <!-- background music (Für Elise, generated) -->
   <button id="musicBtn" type="button" aria-label="Play background music" title="Background music">&#9835;</button>
   <!-- start over: back to the first page and read from the top -->
   <button id="restartBtn" type="button" aria-label="Start over from the beginning" title="Start over">
@@ -1328,7 +1328,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
 })();
 </script>
 
-  <!-- background music: Clair de Lune (real recording), with smooth fade + ducking -->
+  <!-- background music: Für Elise (generated, public-domain), with smooth fade + ducking -->
   <script>
 (function(){
   'use strict';
@@ -1369,7 +1369,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   var btn=document.getElementById('narrateBtn');
   var au=document.getElementById('narrAudio');
   if(!btn||!au) return;
-  var BASE='media/narration/', VER='?v=3', on=false, ready=false, files={}, queue=[], qi=0, seq=0;
+  var BASE='media/narration/', VER='?v=4', on=false, ready=false, files={}, queue=[], qi=0, seq=0;
   au.volume=1.0;
   fetch(BASE+'manifest.json'+VER).then(function(r){return r.json();}).then(function(m){ files=m.files||{}; ready=true; })
     .catch(function(){ btn.style.display='none'; });

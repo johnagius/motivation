@@ -11,10 +11,10 @@ can open in any browser and flip through.
 | `index.html` | The **library / landing page** — thumbnails of every book; tap one to open. |
 | `moon-book.html` | **"We Choose to Go to the Moon"** — JFK's Rice University speech, illustrated, with the 8-stage journey to the Moon as a map for doing hard things. |
 | `preview.png` | Link-preview image shown when the library is shared (WhatsApp, etc.). |
-| `media/clair-de-lune.mp3` | Background music — Debussy's *Clair de Lune* (public-domain recording). |
+| `media/fur-elise.mp3` | Background music — Beethoven's *Für Elise*, **generated** by `gen_music.py` (public-domain; no recording copyright). |
 | `media/narration/*.mp3` | Per-page narration, one file per page, plus `manifest.json`. |
 | `gen_preview.py` | Regenerates `preview.png` (needs Pillow: `pip install Pillow`). |
-| `build_narration.py` | Re-renders the narration audio with Piper neural TTS (see below). |
+| `build_narration.py` | Re-renders the narration audio with Kokoro neural TTS (see below). |
 
 ## Features
 
@@ -23,10 +23,10 @@ can open in any browser and flip through.
   **Rotate to landscape** and it becomes the full **two-page animated book** that uses
   the whole screen — a "rotate for the full book" hint shows in portrait, and your place
   is kept when you rotate. On desktop it's the two-page book with page-turn animations.
-- **Real background music.** Debussy's *Clair de Lune* (an actual recording, not
-  synthesised). It fades in and loops gently.
+- **Generated background music.** Beethoven's *Für Elise*, synthesised from scratch
+  (`gen_music.py`) so there is no recording copyright. It fades in and loops gently.
 - **Neural narration.** Each page is read aloud by a natural neural voice (rendered
-  ahead of time with [Piper](https://github.com/rhasspy/piper)), so it sounds the same
+  ahead of time with [Kokoro](https://github.com/thewh1teagle/kokoro-onnx)), so it sounds the same
   on every device. It turns the pages as it reads, and while it speaks the music
   automatically **ducks** to a low level.
 - **Auto-start.** Browsers block audio until the reader interacts, so the music and
@@ -47,9 +47,9 @@ The narration MP3s are committed, so you don't need to rebuild them. To regenera
 (e.g. after editing the book text or to change the voice):
 
 ```bash
-pip install piper-tts static-ffmpeg
-# download a Piper voice to /tmp/piper/ryan.onnx (+ .onnx.json) from
-# https://huggingface.co/rhasspy/piper-voices  (this uses en_US-ryan-high)
+pip install kokoro-onnx soundfile static-ffmpeg
+# put the Kokoro model + voices in /tmp/kokoro/ : kokoro-v1.0.onnx, voices-v1.0.bin
+# from the kokoro-onnx 'model-files-v1.0' release (set KOKORO_VOICE, e.g. am_michael)
 python3 build_narration.py
 ```
 

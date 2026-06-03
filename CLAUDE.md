@@ -21,9 +21,10 @@ each book is a standalone `*-book.html`.
 |------|------------|
 | `index.html` | Library landing page — a grid of `.card` links, one per book. |
 | `moon-book.html` | Reference book (JFK "We Choose to Go to the Moon"). Copy it to start a new book. |
-| `media/clair-de-lune.mp3` | Shared background music (Debussy, public-domain recording). |
+| `media/fur-elise.mp3` | Background music — Für Elise, **generated** by `gen_music.py` (public-domain, no recording copyright). |
 | `media/narration/NN.mp3` + `manifest.json` | Per-page narration for a book. |
-| `build_narration.py` | Renders narration with Piper neural TTS. |
+| `build_narration.py` | Renders narration with **Kokoro** neural TTS (natural prosody; replaced the robotic Piper voice). |
+| `gen_music.py` | Synthesises the public-domain `fur-elise.mp3` backing track from scratch. |
 | `gen_preview.py` | Renders `preview.png` (1200×630 social card) with Pillow. |
 
 ## How a book is structured (read before editing audio/pages)
@@ -60,10 +61,11 @@ volume; **2 seconds later** narration begins (and ducks the music to a low level
 ## Adding a new book
 
 1. Copy `moon-book.html` → `<slug>-book.html`; replace the `pagesrc` pages and `<title>`.
-2. Render narration: `pip install piper-tts static-ffmpeg`, place a Piper voice at
-   `/tmp/piper/ryan.onnx` (+ `.onnx.json`) from
-   https://huggingface.co/rhasspy/piper-voices, then `python3 build_narration.py`
-   (point `HERE`/paths at the new book, output to `media/narration/<slug>/`).
+2. Render narration: `pip install kokoro-onnx soundfile static-ffmpeg`, put the Kokoro
+   model + voices in `/tmp/kokoro/` (`kokoro-v1.0.onnx`, `voices-v1.0.bin` from the
+   kokoro-onnx `model-files-v1.0` release), then `python3 build_narration.py`
+   (set `KOKORO_VOICE` to pick a voice, e.g. `am_michael`). **Do not** raise Piper's old
+   `--sentence-silence`; Kokoro paces sentences itself via per-sentence rendering.
 3. Add a `.card` link to `index.html` and (optionally) a preview image via
    `gen_preview.py`.
 4. Commit, merge to `main`, push.
