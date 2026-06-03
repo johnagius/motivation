@@ -280,6 +280,8 @@ blockquote .accent{color:var(--gold);}
 @keyframes eqbar{0%,100%{height:3px;}50%{height:12px;}}
 #narrStatus.paused{color:var(--cream-dim);}
 #narrStatus.paused .eq i{animation-play-state:paused;height:5px;background:var(--cream-dim);}
+#narrStatus.music{color:var(--cream-dim);}
+#narrStatus.music .eq i{background:var(--steel);}
 
 /* back-to-library link */
 #homeBtn{position:fixed;left:16px;top:calc(14px + env(safe-area-inset-top));z-index:70;
@@ -1258,6 +1260,12 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   // non-blank pages). Narration files are keyed by non-blank ordinal, so book/landscape
   // mode must translate flat indices or the wrong page is read / pages are skipped.
   var narrIndex=(function(){ var m=[],n=0; pages.forEach(function(p){ m.push(/class="pg blank"/.test(p)?-1:n++); }); return m; })();
+  // cover/title pages are "music only" (never narrated); narration begins at the first content page
+  var musicOnly={}, firstContentNarr=0;
+  (function(){ var n=0, found=false; pages.forEach(function(p){
+    if(/class="pg blank"/.test(p)) return;
+    if(/class="pg[^"]*cover/.test(p)) musicOnly[n]=true; else if(!found){ firstContentNarr=n; found=true; }
+    n++; }); })();
 
   // page persistence across an orientation reload, via #p=<flat page index>
   function hashPage(){ var m=/[#&]p=(\d+)/.exec(location.hash); return m?Math.max(0,Math.min(NPAGES-1,+m[1])):0; }
@@ -1354,7 +1362,8 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     goToNarr:function(n){ stop();                                                       // jump so narration index n is shown
       if(MODE==='pager'){ setIdx(Math.max(0,Math.min(mPanels.length-1,n)),true); }
       else { var f=narrIndex.indexOf(n); if(f<0) f=0; jumpTo(Math.floor(f/2)); } },
-    skipIntro:function(){ this.goToNarr(2); },                                          // past the two cover pages
+    intro:function(i){ return !!musicOnly[i]; },                                        // music-only (cover) page?
+    skipIntro:function(){ this.goToNarr(firstContentNarr); },                           // jump to the first content page
     next:function(){
       if(MODE==='pager'){ if(mIdx<mPanels.length-1) setIdx(mIdx+1,true); }
       else if(!animating && cur<spreads.length-1){ stop(); flipForward(); }
@@ -1418,15 +1427,27 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   function status(s){
     if(!statusEl) return; var l=statusEl.querySelector('.lbl');
     if(s==='reading'){ statusEl.className='show'; if(l) l.textContent='Reading'; }
+    else if(s==='music'){ statusEl.className='show music'; if(l) l.textContent='Music · intro'; }
     else if(s==='paused'){ statusEl.className='show paused'; if(l) l.textContent='Paused · tap to resume'; }
     else { statusEl.className=''; }
   }
 
+  var INTRO_DWELL=4500, introT=null;     // how long a music-only cover page rests before advancing
+  function isIntro(i){ return window.MB && window.MB.intro && window.MB.intro(i); }
   function playCurrent(){
     if(!on) return;
+    if(introT){ clearTimeout(introT); introT=null; }
     seq++; var my=seq;
-    queue=(window.MB.curIndices()||[]).filter(function(i){ return files[String(i)]; }); qi=0;
-    if(!queue.length){ advance(my); return; }
+    var idxs=(window.MB.curIndices()||[]);
+    queue=idxs.filter(function(i){ return files[String(i)] && !isIntro(i); }); qi=0;   // skip cover (music-only) pages
+    if(!queue.length){
+      btn.classList.remove('speaking');
+      if(idxs.some(isIntro)){                       // music-only title page: full music, no voice, then advance
+        unduck(); status('music');
+        introT=setTimeout(function(){ advance(my); }, INTRO_DWELL);
+      } else { advance(my); }
+      return;
+    }
     btn.classList.add('speaking'); duck();
     playNext(my);
   }
