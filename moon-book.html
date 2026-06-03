@@ -256,6 +256,30 @@ blockquote .accent{color:var(--gold);}
 #startOverlay .so-sub{font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.12em;
   font-size:.74rem;color:var(--cream-dim);max-width:30ch;line-height:1.7;}
 @keyframes soPulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+/* skip-intro link inside the overlay */
+#startOverlay .so-skip{margin-top:4px;font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.2em;
+  text-transform:uppercase;font-size:.66rem;color:var(--cream-dim);background:none;border:none;cursor:pointer;
+  border-bottom:1px solid rgba(207,199,179,0.4);padding:4px 2px;transition:color .25s,border-color .25s;
+  -webkit-tap-highlight-color:transparent;}
+#startOverlay .so-skip:hover{color:var(--gold);border-color:var(--gold);}
+
+/* ===== "now reading / paused" status pill (top-centre) ===== */
+#narrStatus{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);
+  z-index:71;display:none;align-items:center;gap:9px;cursor:pointer;
+  font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.2em;text-transform:uppercase;font-size:.62rem;
+  color:var(--cream);background:rgba(10,14,28,0.72);padding:7px 15px;border-radius:20px;
+  border:1px solid rgba(232,184,95,0.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 4px 16px rgba(0,0,0,0.45);-webkit-tap-highlight-color:transparent;}
+#narrStatus.show{display:inline-flex;}
+#narrStatus .eq{display:inline-flex;gap:2px;align-items:flex-end;height:12px;}
+#narrStatus .eq i{width:2.5px;height:11px;background:var(--gold);border-radius:1px;
+  animation:eqbar .9s ease-in-out infinite;}
+#narrStatus .eq i:nth-child(2){animation-delay:.15s;}
+#narrStatus .eq i:nth-child(3){animation-delay:.30s;}
+#narrStatus .eq i:nth-child(4){animation-delay:.45s;}
+@keyframes eqbar{0%,100%{height:3px;}50%{height:12px;}}
+#narrStatus.paused{color:var(--cream-dim);}
+#narrStatus.paused .eq i{animation-play-state:paused;height:5px;background:var(--cream-dim);}
 
 /* back-to-library link */
 #homeBtn{position:fixed;left:16px;top:calc(14px + env(safe-area-inset-top));z-index:70;
@@ -375,6 +399,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     <div class="so-title">We Choose to Go to the Moon</div>
     <div class="so-cta">Tap anywhere to begin &#9654;</div>
     <div class="so-sub">Music begins, then the page is read aloud. Swipe or use the arrows to turn the pages.</div>
+    <button id="skipIntroBtn" class="so-skip" type="button">Skip the intro &#8594;</button>
   </div>
 
   <!-- back to the library (main page) -->
@@ -389,6 +414,11 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   <!-- real audio: Moonlight Sonata mvt.1 (public-domain Musopen recording) + per-page narration -->
   <audio id="bgMusic" src="media/moonlight-sonata.mp3?v=1" loop preload="auto"></audio>
   <audio id="narrAudio" preload="auto"></audio>
+
+  <!-- "now reading / paused" status pill (tap to pause/resume) -->
+  <div id="narrStatus" role="status" aria-live="polite" title="Tap to pause or resume">
+    <span class="eq"><i></i><i></i><i></i><i></i></span><span class="lbl">Reading</span>
+  </div>
 
   <!-- narration (neural voice) — ducks the music while it reads -->
   <button id="narrateBtn" type="button" aria-label="Read aloud" title="Read aloud (narration)">
@@ -1321,6 +1351,10 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     atEnd:function(){ return MODE==='pager' ? (mIdx>=mPanels.length-1) : (cur>=spreads.length-1); },
     pauseAuto:function(){ stop(); },
     goStart:function(){ stop(); if(MODE==='pager') setIdx(0,true); else jumpTo(0); },  // back to first page
+    goToNarr:function(n){ stop();                                                       // jump so narration index n is shown
+      if(MODE==='pager'){ setIdx(Math.max(0,Math.min(mPanels.length-1,n)),true); }
+      else { var f=narrIndex.indexOf(n); if(f<0) f=0; jumpTo(Math.floor(f/2)); } },
+    skipIntro:function(){ this.goToNarr(2); },                                          // past the two cover pages
     next:function(){
       if(MODE==='pager'){ if(mIdx<mPanels.length-1) setIdx(mIdx+1,true); }
       else if(!animating && cur<spreads.length-1){ stop(); flipForward(); }
@@ -1379,6 +1413,15 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   function duck(){ if(window.__music) window.__music.duck(); }
   function unduck(){ if(window.__music) window.__music.unduck(); }
 
+  // visible "now reading / paused" indicator
+  var statusEl=document.getElementById('narrStatus');
+  function status(s){
+    if(!statusEl) return; var l=statusEl.querySelector('.lbl');
+    if(s==='reading'){ statusEl.className='show'; if(l) l.textContent='Reading'; }
+    else if(s==='paused'){ statusEl.className='show paused'; if(l) l.textContent='Paused · tap to resume'; }
+    else { statusEl.className=''; }
+  }
+
   function playCurrent(){
     if(!on) return;
     seq++; var my=seq;
@@ -1392,6 +1435,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     if(qi>=queue.length){ btn.classList.remove('speaking'); advance(my); return; }
     au.onended=function(){ playNext(my); };
     au.src=BASE+pad(queue[qi++]); au.currentTime=0;
+    status('reading');
     var p=au.play(); if(p&&p.catch) p.catch(function(){});
   }
   function advance(my){
@@ -1402,13 +1446,19 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
 
   function kick(){ if(!on) return; if(!ready){ setTimeout(kick,150); return; } playCurrent(); }
   function start(){ if(on) return; on=true; btn.classList.add('on'); btn.setAttribute('aria-label','Stop narration');
-    if(window.MB) window.MB.pauseAuto(); kick(); }
+    status('reading'); if(window.MB) window.MB.pauseAuto(); kick(); }
+  // pause = stop reading but stay resumable from the current page (Space / click / status pill)
+  function pause(){ if(!on) return; on=false; seq++; btn.classList.remove('on','speaking'); try{au.pause();}catch(e){}
+    unduck(); btn.setAttribute('aria-label','Read aloud'); status('paused'); }
+  // stop = fully off (🔊 button, end of book) — hides the indicator
   function stop(){ on=false; seq++; btn.classList.remove('on','speaking'); try{au.pause();}catch(e){} unduck();
-    btn.setAttribute('aria-label','Read aloud'); }
+    btn.setAttribute('aria-label','Read aloud'); status(''); }
 
   if(window.MB) window.MB.onPage(function(){ if(on) playCurrent(); });
-  btn.addEventListener('click',function(e){ e.stopPropagation(); on?stop():start(); });
-  window.__narration={ isOn:function(){ return on; }, start:start, stop:stop, toggle:function(){ on?stop():start(); } };
+  btn.addEventListener('click',function(e){ e.stopPropagation(); on?stop():start(); });          // 🔊 = on / off
+  if(statusEl) statusEl.addEventListener('click',function(e){ e.stopPropagation(); on?pause():start(); });
+  window.__narration={ isOn:function(){ return on; }, start:start, stop:stop, pause:pause,
+    toggle:function(){ on?pause():start(); } };                                                   // Space / click = pause / resume
 })();
   </script>
 
@@ -1421,25 +1471,29 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   var NARR_DELAY=2000, started=false;            // music first; narration begins 2s later
   var overlay=document.getElementById('startOverlay');
 
-  function begin(fromTop){                         // start music, then narration after 2s
+  function begin(skip){                            // start music, then narration after 2s
     if(window.__music && !window.__music.isOn()) window.__music.play();
+    if(skip && window.MB && window.MB.skipIntro) window.MB.skipIntro();   // jump past the cover pages first
     setTimeout(function(){
       if(window.__narration && !window.__narration.isOn()) window.__narration.start();
     }, NARR_DELAY);
   }
-  function dismissOverlay(){
+  function dismissOverlay(skip){
     if(started) return; started=true;
     if(overlay){ overlay.classList.add('gone'); setTimeout(function(){ if(overlay&&overlay.parentNode) overlay.parentNode.removeChild(overlay); },700); }
-    begin();
+    begin(skip);
   }
   if(overlay){
-    ['click','touchstart','keydown'].forEach(function(ev){ overlay.addEventListener(ev,function(e){ e.preventDefault(); dismissOverlay(); },{passive:false}); });
-  }else{ dismissOverlay(); }
+    ['click','touchstart','keydown'].forEach(function(ev){ overlay.addEventListener(ev,function(e){ e.preventDefault(); dismissOverlay(false); },{passive:false}); });
+  }else{ dismissOverlay(false); }
+  // "Skip the intro" — begin, but jump straight to the first content page
+  var skipBtn=document.getElementById('skipIntroBtn');
+  if(skipBtn) ['click','touchstart'].forEach(function(ev){ skipBtn.addEventListener(ev,function(e){ e.preventDefault(); e.stopPropagation(); dismissOverlay(true); },{passive:false}); });
   // fallback: if the overlay is somehow bypassed, the first page interaction still starts audio
   function fallback(e){
     if(started) return;
-    if(e && e.target && e.target.closest && e.target.closest('#musicBtn,#narrateBtn,#restartBtn,#homeBtn,a,button')) return;
-    dismissOverlay();
+    if(e && e.target && e.target.closest && e.target.closest('#musicBtn,#narrateBtn,#restartBtn,#homeBtn,#skipIntroBtn,a,button')) return;
+    dismissOverlay(false);
   }
   ['pointerdown','keydown'].forEach(function(ev){ window.addEventListener(ev,fallback,true); });
 
