@@ -28,15 +28,35 @@ def page_text(ph):
     ph = re.sub(r'(?i)<br\s*/?>', ' ', ph)
     ph = re.sub(r'<[^>]+>', ' ', ph)                                             # strip tags
     ph = html.unescape(ph)
+    # Replace symbols Piper/espeak mis-voices or turns into noise bursts.
+    ph = ph.replace('·', ', ').replace('•', ', ')           # middle dots -> pause
+    ph = re.sub(r'[—–]', ', ', ph)                           # em/en dash -> pause
+    ph = ph.replace('…', '. ')                               # ellipsis -> stop
+    ph = ph.replace('“', '').replace('”', '').replace('"', '')
+    ph = ph.replace('‘', "'").replace('’', "'")
+    ph = re.sub(r'[*_`|#<>]', ' ', ph)                       # stray markup symbols
     segs = []
     for line in ph.split("\n"):
         s = re.sub(r'\s+', ' ', line).strip()
+        s = re.sub(r'\s+([,.!?;:])', r'\1', s)               # tidy space before punctuation
+        s = re.sub(r'(,\s*)+', ', ', s).strip(' ,')          # collapse repeated commas
         if not s:
             continue
-        if s[-1] not in '.!?:;…"”’)':   # ensure a sentence end so Piper pauses
+        if s[-1] not in '.!?:;\'\)':    # ensure a sentence end so Piper pauses cleanly
             s += '.'
         segs.append(s)
     return " ".join(segs).strip()
+
+# Audio cleanup applied to every clip: trim dead air at the edges, light spectral
+# denoise, high-pass rumble, loudness-normalize to a consistent level, then hard-limit
+# below 0 dBFS so the raw Piper output (which peaks AT 0 dBFS and crackles) never clips.
+CLEAN = ("silenceremove=start_periods=1:start_silence=0.05:start_threshold=-50dB:detection=peak,"
+         "areverse,"
+         "silenceremove=start_periods=1:start_silence=0.25:start_threshold=-50dB:detection=peak,"
+         "areverse,"
+         "afftdn=nf=-30,highpass=f=80,"
+         "loudnorm=I=-18:TP=-2.0:LRA=11,"
+         "alimiter=limit=0.79")
 
 manifest = {"count": 0, "files": {}}
 panel = 0  # index among non-blank pages (matches the book's panel/flat-page index)
@@ -53,7 +73,8 @@ for ph in pages:
                        input=txt.encode("utf-8"), check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", wav,
-                        "-ac", "1", "-b:a", "80k", os.path.join(OUTDIR, name)], check=True)
+                        "-af", CLEAN, "-ac", "1", "-ar", "44100", "-b:a", "128k",
+                        os.path.join(OUTDIR, name)], check=True)
         os.unlink(wav)
         manifest["files"][str(panel)] = name
         print(f"  page {panel:02d}: {len(txt):4d} chars -> {name}")
