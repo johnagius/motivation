@@ -368,7 +368,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     <div class="leaf left"><div class="pg-host" id="hostL"></div></div>
     <div class="leaf right"><div class="pg-host" id="hostR"></div></div>
   </div>
-  <div id="hint">Space / click — play · &rarr; &larr; — step · &#9835; — music · &#9836; — narrate · G — record full book · C — record this spread</div>
+  <div id="hint">Space / click — pause &amp; resume reading · &rarr; &larr; — turn pages · &#9835; — music · &#9836; — narrate · &#8635; — start over</div>
 
   <!-- one-time "tap anywhere to begin" overlay (a real tap is required to unlock audio) -->
   <div id="startOverlay" role="button" tabindex="0" aria-label="Tap anywhere to begin">
@@ -1206,14 +1206,15 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     jumpTo(0);
   }
 
-  // ---- controls ----
+  // ---- controls (narration is the driver; no timed auto-flip) ----
   document.addEventListener('keydown',function(e){
-    if(e.code==='Space'){ e.preventDefault(); playing?stop():play(); }
-    if(e.code==='ArrowRight'){ e.preventDefault(); stop(); stepForward(); }
-    if(e.code==='ArrowLeft'){ e.preventDefault(); stop(); prev(); }
+    if(document.getElementById('startOverlay')) return;            // overlay handles the first key
+    if(e.code==='Space'){ e.preventDefault(); if(window.__narration) window.__narration.toggle(); }  // pause / resume reading
+    if(e.code==='ArrowRight'){ e.preventDefault(); stepForward(); }   // turn the page (narration follows)
+    if(e.code==='ArrowLeft'){ e.preventDefault(); prev(); }
     if(e.code==='KeyG'){ e.preventDefault(); captureAll(); }      // full book -> one .webm
     if(e.code==='KeyC'){ e.preventDefault(); captureCurrent(); }  // current spread -> .webm
-    if(e.code==='Escape'){ stop(); }
+    if(e.code==='Escape'){ if(window.__narration) window.__narration.stop(); }
   });
   // ---- environment ----
   function isPhone(){ return window.matchMedia('(max-width:820px)').matches ||
@@ -1295,7 +1296,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
     renderSpread(Math.floor(hashPage()/2));
     if(coarse){ bindBookSwipe(); }                       // phone landscape: swipe the book
     else{                                                // desktop: click toggles the showcase auto-advance
-      book.addEventListener('click',function(){ if(window.__narration && window.__narration.isOn()) return; playing?stop():play(); });
+      book.addEventListener('click',function(){ if(document.getElementById('startOverlay')) return; if(window.__narration) window.__narration.toggle(); });
       // no auto-advance on load: the "tap to begin" overlay drives the start so narration begins on page 1
     }
   }
@@ -1407,7 +1408,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
 
   if(window.MB) window.MB.onPage(function(){ if(on) playCurrent(); });
   btn.addEventListener('click',function(e){ e.stopPropagation(); on?stop():start(); });
-  window.__narration={ isOn:function(){ return on; }, start:start, stop:stop };
+  window.__narration={ isOn:function(){ return on; }, start:start, stop:stop, toggle:function(){ on?stop():start(); } };
 })();
   </script>
 
