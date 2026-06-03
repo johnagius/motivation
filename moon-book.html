@@ -1369,7 +1369,7 @@ body.pager #rotateHint{display:block;position:fixed;left:50%;top:calc(14px + env
   var btn=document.getElementById('narrateBtn');
   var au=document.getElementById('narrAudio');
   if(!btn||!au) return;
-  var BASE='media/narration/', VER='?v=2', on=false, ready=false, files={}, queue=[], qi=0, seq=0;
+  var BASE='media/narration/', VER='?v=3', on=false, ready=false, files={}, queue=[], qi=0, seq=0;
   au.volume=1.0;
   fetch(BASE+'manifest.json'+VER).then(function(r){return r.json();}).then(function(m){ files=m.files||{}; ready=true; })
     .catch(function(){ btn.style.display='none'; });

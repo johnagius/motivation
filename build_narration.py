@@ -68,8 +68,11 @@ for ph in pages:
     if txt:
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tw:
             wav = tw.name
+        # NOTE: --sentence-silence must stay low. At 0.45 Piper (ryan) synthesises a
+        # block of broadband WHITE NOISE into the trailing silence pad (a loud static
+        # tail after the last word). 0.2 keeps natural sentence pauses with a clean tail.
         subprocess.run(["piper", "-m", MODEL, "--length-scale", "1.07",
-                        "--sentence-silence", "0.45", "-f", wav],
+                        "--sentence-silence", "0.2", "-f", wav],
                        input=txt.encode("utf-8"), check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", wav,
