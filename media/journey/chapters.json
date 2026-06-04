@@ -1,0 +1,96 @@
+{
+ "chapters": [
+  {
+   "id": 0,
+   "time": "",
+   "title": "",
+   "file": "00.mp3",
+   "dur": 23.09
+  },
+  {
+   "id": 1,
+   "time": "Sunday, just past nine",
+   "title": "The weight no one sees",
+   "file": "01.mp3",
+   "dur": 74.88
+  },
+  {
+   "id": 2,
+   "time": "Monday morning",
+   "title": "The body knows first",
+   "file": "02.mp3",
+   "dur": 98.71
+  },
+  {
+   "id": 3,
+   "time": "A few days in",
+   "title": "The story you're telling",
+   "file": "03.mp3",
+   "dur": 95.35
+  },
+  {
+   "id": 4,
+   "time": "That same night",
+   "title": "What's in your hands",
+   "file": "04.mp3",
+   "dur": 86.47
+  },
+  {
+   "id": 5,
+   "time": "The thing you avoid",
+   "title": "The smallest step",
+   "file": "05.mp3",
+   "dur": 86.36
+  },
+  {
+   "id": 6,
+   "time": "Past midnight",
+   "title": "The thief in your pocket",
+   "file": "06.mp3",
+   "dur": 93.08
+  },
+  {
+   "id": 7,
+   "time": "One ordinary morning",
+   "title": "The unglamorous medicine",
+   "file": "07.mp3",
+   "dur": 91.44
+  },
+  {
+   "id": 8,
+   "time": "Catching up with a friend",
+   "title": "The thing you stopped saying",
+   "file": "08.mp3",
+   "dur": 104.59
+  },
+  {
+   "id": 9,
+   "time": "Back at home",
+   "title": "One turn toward",
+   "file": "09.mp3",
+   "dur": 78.96
+  },
+  {
+   "id": 10,
+   "time": "A few weeks in",
+   "title": "Who you're becoming",
+   "file": "10.mp3",
+   "dur": 88.86
+  },
+  {
+   "id": 11,
+   "time": "When it returns",
+   "title": "Weather, not climate",
+   "file": "11.mp3",
+   "dur": 94.25
+  },
+  {
+   "id": 12,
+   "time": "Sunday, again",
+   "title": "The turn has begun",
+   "file": "12.mp3",
+   "dur": 98.45
+  }
+ ],
+ "voice": "am_michael"
+}
