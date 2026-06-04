@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Quiet Turn — An Immersive Listen</title>
+<meta name="description" content="A 19-minute immersive listen for the heavy seasons of the middle years. One story, walked over a few quiet weeks — calm the body, catch the story, take the small step, reach for people. Backed by the science, never a lecture. Press play.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Quiet Turn — An Immersive Listen">
+<meta property="og:description" content="Press play. One quiet story, walked over a few weeks, that helps you set the weight down. Backed by the science, never a lecture.">
+<meta property="og:url" content="https://johnagius.github.io/motivation/journey-book.html">
+<meta property="og:image" content="https://johnagius.github.io/motivation/journey-preview.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Spectral:wght@300;400&family=Oswald:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#05060c; --ink:#0a0d18;
+  --cream:#f3ecd9; --cream-dim:#cbc4b2;
+  --gold:#e8b85f; --gold-soft:#c89a4a; --steel:#8294bc;
+  --warm:0;                         /* 0 = cool/early, 1 = warm/turned (JS) */
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  background:var(--void); color:var(--cream);
+  font-family:'Spectral',serif; overflow:hidden; position:fixed; inset:0;
+  -webkit-font-smoothing:antialiased;
+}
+/* ambient field: cool indigo (early) cross-dissolving into warm amber (after the turn) */
+#bg{position:fixed; inset:0; z-index:0;
+  background:linear-gradient(180deg,#070912 0%, #05060c 62%, #04040a 100%);}
+#cool,#warm{position:fixed; inset:-15%; z-index:0; pointer-events:none; filter:blur(36px);
+  transition:opacity 2s linear;}
+#cool{background:radial-gradient(closest-side at 50% 40%, rgba(120,150,210,.16) 0%, transparent 70%);
+  opacity:calc(1 - var(--warm));}
+#warm{background:radial-gradient(closest-side at 50% 42%, rgba(232,184,95,.20) 0%, transparent 72%);
+  opacity:var(--warm);}
+.stars{position:fixed; inset:0; z-index:0; pointer-events:none;}
+.star{position:absolute; border-radius:50%; background:#fff; opacity:.5;
+  animation:tw var(--dur,4s) ease-in-out infinite;}
+@keyframes tw{0%,100%{opacity:.12;}50%{opacity:.7;}}
+
+#stage{position:relative; z-index:2; height:100%; width:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:32px 26px; gap:0;}
+
+/* the lamp / breathing orb */
+#lamp{width:128px; height:128px; border-radius:50%; position:relative; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; flex:none; margin-bottom:30px;
+  transition:transform .6s ease;}
+#orb{width:96px; height:96px; border-radius:50%;
+  background:radial-gradient(circle at 50% 42%, #fff7e4 0%, #f1cd79 46%, #e0a445 74%, #6b4a1f 100%);
+  box-shadow:0 0 52px 10px rgba(232,190,110,calc(.30 + .30*var(--warm)));
+  animation:breathe 6.5s ease-in-out infinite; transition:box-shadow 1.5s linear;}
+#ring{position:absolute; inset:0; border-radius:50%;
+  border:1px solid rgba(232,184,95,.30);}
+#ring.pulse{animation:pulse 2.4s ease-out infinite;}
+@keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+@keyframes pulse{0%{transform:scale(1);opacity:.5;}100%{transform:scale(1.7);opacity:0;}}
+#playicon{position:absolute; z-index:3; color:#2a1e08; font-size:26px; pointer-events:none;
+  opacity:.0; transition:opacity .4s;}
+.idle #playicon{opacity:.85;}
+
+.eyebrow{font-family:'Oswald',sans-serif; font-weight:400; letter-spacing:.34em;
+  text-transform:uppercase; font-size:.62rem; color:var(--gold-soft); opacity:.85; margin-bottom:14px;}
+#title{font-family:'Cormorant Garamond',serif; font-weight:500;
+  font-size:clamp(2.5rem,8vw,4rem); line-height:1; color:var(--cream);}
+#title em{font-style:italic; color:var(--gold);}
+#subtitle{margin-top:16px; font-style:italic; font-weight:300; color:var(--cream-dim);
+  font-size:clamp(1rem,2.4vw,1.18rem); max-width:24ch;}
+#hint{margin-top:30px; font-family:'Oswald',sans-serif; font-weight:300; letter-spacing:.18em;
+  text-transform:uppercase; font-size:.64rem; color:var(--steel); line-height:2;}
+
+/* now-playing chapter label (during playback) */
+#chap{position:relative; height:96px; display:flex; flex-direction:column; justify-content:center;
+  opacity:0; transition:opacity 1s ease;}
+#ctime{font-family:'Oswald',sans-serif; font-weight:400; letter-spacing:.3em; text-transform:uppercase;
+  font-size:.66rem; color:var(--gold-soft); margin-bottom:12px;}
+#ctitle{font-family:'Cormorant Garamond',serif; font-weight:500; font-style:italic;
+  font-size:clamp(1.7rem,4.6vw,2.5rem); color:var(--cream); line-height:1.12; max-width:20ch;}
+.chap-swap{animation:swap 1s ease;}
+@keyframes swap{0%{opacity:0; transform:translateY(8px);}100%{opacity:1; transform:translateY(0);}}
+
+/* transport */
+#transport{position:fixed; left:0; right:0; bottom:0; z-index:3;
+  padding:18px 22px calc(20px + env(safe-area-inset-bottom)); display:flex; flex-direction:column;
+  align-items:center; gap:14px; opacity:0; transition:opacity .8s ease; pointer-events:none;}
+#transport.show{opacity:1; pointer-events:auto;}
+#bar{width:min(560px,86vw); height:3px; border-radius:3px; background:rgba(232,184,95,.16); position:relative;}
+#fill{position:absolute; left:0; top:0; bottom:0; width:0%; border-radius:3px;
+  background:linear-gradient(90deg,var(--gold-soft),var(--gold));}
+#ticks{position:absolute; inset:0;}
+#ticks i{position:absolute; top:-2px; width:1px; height:7px; background:rgba(243,236,217,.25);}
+.btns{display:flex; align-items:center; gap:26px;}
+.tbtn{background:none; border:none; color:var(--cream-dim); cursor:pointer; padding:8px;
+  font-size:18px; line-height:1; opacity:.8; transition:opacity .2s, color .2s; font-family:'Oswald',sans-serif;}
+.tbtn:hover{opacity:1; color:var(--gold);}
+.tbtn.big{font-size:26px; color:var(--cream);}
+#mnote.off{opacity:.35; text-decoration:line-through;}
+#clock{font-family:'Oswald',sans-serif; font-weight:300; letter-spacing:.12em; font-size:.64rem;
+  color:var(--steel);}
+
+/* states */
+#playview,#endview{display:none; flex-direction:column; align-items:center;}
+.idle #titleview{display:flex; flex-direction:column; align-items:center;}
+.playing #titleview,.ended #titleview{display:none;}
+.playing #playview{display:flex;}
+.ended #endview{display:flex;}
+.playing #lamp{margin-bottom:22px;}
+#endview .eyebrow{margin-bottom:18px;}
+#replay{margin-top:26px; font-family:'Oswald',sans-serif; font-weight:400; letter-spacing:.2em;
+  text-transform:uppercase; font-size:.7rem; color:var(--gold); background:none;
+  border:1px solid var(--gold-soft); border-radius:30px; padding:12px 26px; cursor:pointer;
+  transition:background .25s,color .25s;}
+#replay:hover{background:var(--gold); color:#21170a;}
+.fadein{animation:fadein 1.4s ease both;}
+@keyframes fadein{from{opacity:0;}to{opacity:1;}}
+.home{position:fixed; top:16px; left:18px; z-index:4; font-family:'Oswald',sans-serif;
+  font-weight:300; letter-spacing:.2em; text-transform:uppercase; font-size:.62rem;
+  color:var(--steel); text-decoration:none; opacity:.6; transition:opacity .2s;}
+.home:hover{opacity:1; color:var(--gold);}
+</style>
+</head>
+<body class="idle">
+  <div id="bg"></div>
+  <div id="cool"></div>
+  <div id="warm"></div>
+  <div class="stars" id="stars"></div>
+  <a class="home" href="index.html">&larr; Library</a>
+
+  <div id="stage">
+    <div id="lamp"><div id="ring"></div><div id="orb"></div><div id="playicon">&#9654;</div></div>
+
+    <!-- TITLE (idle) -->
+    <div id="titleview">
+      <div class="eyebrow">An Immersive Listen</div>
+      <h1 id="title">The Quiet <em>Turn</em></h1>
+      <div id="subtitle">For the heavy seasons no one talks about. Press play, and just walk with it.</div>
+      <div id="hint">headphones in &middot; <span id="lenhint">about 19 minutes</span> &middot; nothing to do but listen</div>
+    </div>
+
+    <!-- PLAYING -->
+    <div id="playview">
+      <div id="chap"><div id="ctime"></div><div id="ctitle"></div></div>
+    </div>
+
+    <!-- END -->
+    <div id="endview">
+      <div class="eyebrow">The Turn Has Already Begun</div>
+      <h1 id="title2" style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(1.8rem,5vw,2.6rem);color:var(--cream);font-style:italic;max-width:18ch;line-height:1.15;">Pick one thing. Tonight.</h1>
+      <button id="replay">Listen again</button>
+    </div>
+  </div>
+
+  <div id="transport">
+    <div id="bar"><div id="ticks"></div><div id="fill"></div></div>
+    <div class="btns">
+      <button class="tbtn" id="prev" title="Previous chapter">&#10094;</button>
+      <button class="tbtn big" id="toggle" title="Pause / play">&#10073;&#10073;</button>
+      <button class="tbtn" id="next" title="Next chapter">&#10095;</button>
+      <button class="tbtn" id="mnote" title="Music on / off">&#9834;</button>
+    </div>
+    <div id="clock"><span id="cur">0:00</span> / <span id="tot">--:--</span></div>
+  </div>
+
+  <!-- music beds: Satie Gnossienne No.1 (searching) crossfading into Chopin Nocturne Op.9 No.2 (tender),
+       both public-domain piano recordings -->
+  <audio id="bedA" src="media/gnossienne.mp3?v=1" loop preload="auto"></audio>
+  <audio id="bedB" src="media/nocturne.mp3?v=1" loop preload="auto"></audio>
+
+<script>
+(function(){
+  // starfield
+  var sf=document.getElementById('stars');
+  for(var i=0;i<110;i++){var s=document.createElement('span');s.className='star';
+    var sz=Math.random()*2+0.4;s.style.width=s.style.height=sz+'px';
+    s.style.top=Math.random()*100+'%';s.style.left=Math.random()*100+'%';
+    s.style.setProperty('--dur',(Math.random()*4+3)+'s');s.style.animationDelay=Math.random()*5+'s';
+    sf.appendChild(s);}
+
+  var body=document.body, root=document.documentElement;
+  var BASE='media/journey/', VER='?v=1';
+  var TURN=7;                       // crossfade Gnossienne -> Nocturne at this chapter
+  var SPEAK=0.12, GAP=0.30, GAPMS=2600;
+  var bedA=document.getElementById('bedA'), bedB=document.getElementById('bedB');
+  var narr=new Audio(); narr.preload='auto';
+  var chapters=[], starts=[], total=0, cur=-1, playing=false, musicOn=true, ended=false, gapTimer=null;
+
+  function fmt(s){s=Math.max(0,Math.round(s));var m=Math.floor(s/60);var r=s%60;return m+':'+(r<10?'0':'')+r;}
+  function activeBed(){return cur>=TURN?bedB:bedA;}
+
+  // smooth volume tween for a media element
+  function tween(el,to,ms){
+    if(el._t)clearInterval(el._t);
+    var from=el.volume, t0=performance.now();
+    el._t=setInterval(function(){
+      var k=Math.min(1,(performance.now()-t0)/ms);
+      el.volume=Math.max(0,Math.min(1,from+(to-from)*k));
+      if(k>=1){clearInterval(el._t);el._t=null;}
+    },40);
+  }
+
+  fetch(BASE+'chapters.json'+VER).then(function(r){return r.json();}).then(function(d){
+    chapters=d.chapters||[]; total=0; starts=[];
+    chapters.forEach(function(c){starts.push(total); total+=c.dur+ (GAPMS/1000);});
+    document.getElementById('tot').textContent=fmt(total);
+    document.getElementById('lenhint').textContent='about '+Math.round(total/60)+' minutes';
+    // ticks (skip intro at 0)
+    var tk=document.getElementById('ticks');
+    chapters.forEach(function(c,i){ if(i===0)return; var el=document.createElement('i');
+      el.style.left=(starts[i]/total*100)+'%'; tk.appendChild(el); });
+  }).catch(function(){ document.getElementById('lenhint').textContent='press play'; });
+
+  function setWarm(p){ root.style.setProperty('--warm', Math.max(0,Math.min(1,(p-0.40)/0.45)).toFixed(3)); }
+
+  function showChapter(i){
+    var c=chapters[i]; if(!c)return;
+    var chap=document.getElementById('chap');
+    if(c.title){
+      document.getElementById('ctime').textContent=c.time||'';
+      document.getElementById('ctitle').textContent=c.title;
+      chap.style.opacity=1; chap.classList.remove('chap-swap'); void chap.offsetWidth; chap.classList.add('chap-swap');
+    } else { chap.style.opacity=0; } // intro: keep it bare
+  }
+
+  function startChapter(i){
+    cur=i;
+    if(i>=chapters.length){ return finish(); }
+    // crossfade music at the turn
+    if(i===TURN && musicOn){ bedB.currentTime=0; bedB.play(); tween(bedA,0,6500); tween(bedB,GAP,6500); setTimeout(function(){bedA.pause();},6800); }
+    showChapter(i);
+    document.getElementById('ring').classList.add('pulse');
+    narr.src=BASE+chapters[i].file+VER;
+    narr.play();
+    if(musicOn) tween(activeBed(),SPEAK,1400);
+  }
+
+  narr.addEventListener('playing',function(){ if(musicOn) tween(activeBed(),SPEAK,1200); });
+  narr.addEventListener('timeupdate',function(){
+    var p=(starts[cur]+narr.currentTime)/total;
+    document.getElementById('fill').style.width=(p*100)+'%';
+    document.getElementById('cur').textContent=fmt(starts[cur]+narr.currentTime);
+    setWarm(p);
+  });
+  narr.addEventListener('ended',function(){
+    document.getElementById('ring').classList.remove('pulse');
+    if(cur+1>=chapters.length){ return finishSoon(); }
+    if(musicOn) tween(activeBed(),GAP,1200);             // swell in the gap
+    gapTimer=setTimeout(function(){ startChapter(cur+1); }, GAPMS);
+  });
+
+  function finishSoon(){ if(musicOn) tween(activeBed(),GAP,1600); gapTimer=setTimeout(finish,2600); }
+  function finish(){
+    ended=true; playing=false;
+    if(musicOn) tween(activeBed(),0,4000);
+    setTimeout(function(){bedA.pause();bedB.pause();},4200);
+    body.classList.remove('playing'); body.classList.add('ended');
+    document.getElementById('transport').classList.remove('show');
+  }
+
+  function begin(){
+    if(playing)return;
+    body.classList.remove('idle','ended'); body.classList.add('playing');
+    document.getElementById('transport').classList.add('show');
+    document.getElementById('toggle').innerHTML='&#10073;&#10073;';
+    playing=true; ended=false;
+    if(musicOn){ bedA.volume=0; bedA.play(); tween(bedA,GAP,2500); }
+    startChapter(0);
+  }
+
+  function pause(){
+    playing=false; narr.pause(); if(gapTimer){clearTimeout(gapTimer);gapTimer=null;}
+    bedA.pause(); bedB.pause();
+    document.getElementById('toggle').innerHTML='&#9654;';
+    document.getElementById('ring').classList.remove('pulse');
+  }
+  function resume(){
+    playing=true;
+    if(musicOn){ var b=activeBed(); b.play(); }
+    if(narr.src){ narr.play(); document.getElementById('ring').classList.add('pulse'); }
+    document.getElementById('toggle').innerHTML='&#10073;&#10073;';
+  }
+  function toggle(){ if(ended)return restart(); if(!playing && cur<0)return begin(); playing?pause():resume(); }
+
+  function jump(d){
+    if(cur<0)return; if(gapTimer){clearTimeout(gapTimer);gapTimer=null;}
+    var ni=Math.max(0,Math.min(chapters.length-1,cur+d));
+    narr.pause();
+    // keep bed correct across the turn boundary
+    if(musicOn){ if(ni>=TURN){ if(bedB.paused){bedB.currentTime=0;bedB.play();} tween(bedA,0,400); tween(bedB,SPEAK,600); setTimeout(function(){bedA.pause();},500);} else { if(bedA.paused){bedA.play();} tween(bedB,0,400); tween(bedA,SPEAK,600); setTimeout(function(){bedB.pause();},500);} }
+    startChapter(ni);
+    if(!playing){playing=true; document.getElementById('toggle').innerHTML='&#10073;&#10073;';}
+  }
+
+  function restart(){ body.classList.remove('ended'); cur=-1; ended=false;
+    document.getElementById('fill').style.width='0%'; setWarm(0); begin(); }
+
+  // controls
+  document.getElementById('lamp').addEventListener('click',function(){ if(body.classList.contains('idle'))begin(); else toggle(); });
+  document.getElementById('toggle').addEventListener('click',toggle);
+  document.getElementById('prev').addEventListener('click',function(){jump(-1);});
+  document.getElementById('next').addEventListener('click',function(){jump(1);});
+  document.getElementById('replay').addEventListener('click',restart);
+  document.getElementById('mnote').addEventListener('click',function(){
+    musicOn=!musicOn; this.classList.toggle('off',!musicOn);
+    if(!musicOn){ tween(bedA,0,500); tween(bedB,0,500); setTimeout(function(){bedA.pause();bedB.pause();},520); }
+    else if(playing){ var b=activeBed(); b.play(); tween(b,SPEAK,800); }
+  });
+  // seek by tapping the bar
+  document.getElementById('bar').addEventListener('click',function(e){
+    if(cur<0||!chapters.length)return;
+    var rect=this.getBoundingClientRect(); var p=(e.clientX-rect.left)/rect.width*total;
+    var i=0; for(var k=0;k<starts.length;k++){ if(p>=starts[k])i=k; }
+    if(gapTimer){clearTimeout(gapTimer);gapTimer=null;}
+    if(musicOn){ if(i>=TURN && bedB.paused){bedB.currentTime=0;bedB.play();bedA.pause();} if(i<TURN && bedA.paused){bedA.play();bedB.pause();} }
+    startChapter(i);
+    var off=Math.max(0,Math.min(chapters[i].dur-0.2, p-starts[i])); try{narr.currentTime=off;}catch(_){}
+    if(!playing){playing=true;document.getElementById('toggle').innerHTML='&#10073;&#10073;';}
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.code==='Space'){e.preventDefault();toggle();}
+    else if(e.code==='ArrowRight')jump(1);
+    else if(e.code==='ArrowLeft')jump(-1);
+  });
+})();
+</script>
+</body>
+</html>
